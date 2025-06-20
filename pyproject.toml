@@ -1,0 +1,12 @@
+[project]
+name = "manager-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.20.0.post0",
+    "alembic>=1.16.2",
+    "sqlalchemy>=2.0.41",
+]
+
