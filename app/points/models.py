@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 
@@ -31,6 +31,8 @@ class Points(Base):
     name = Column(String, nullable=True, default=same_as("addres"))
     region = relationship("Regions", back_populates="points")
     managers = relationship("Users", back_populates="points")
-
+    
     def __str__(self):
         return f"{self.addres}"
+    
+    
