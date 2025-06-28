@@ -8,5 +8,6 @@ dependencies = [
     "aiogram>=3.20.0.post0",
     "alembic>=1.16.2",
     "sqlalchemy>=2.0.41",
+    "sqlalchemy-utils>=0.41.2",
 ]
 

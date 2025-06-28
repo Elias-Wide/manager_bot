@@ -15,7 +15,7 @@ from app.core.database import Base
 
 class Reports(Base):
 
-    datetime = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False)
     point_id = Column(
         ForeignKey("points.id", ondelete="CASCADE"), nullable=True
     )

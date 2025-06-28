@@ -1,10 +1,11 @@
 from typing import List
 from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
-
+from sqlalchemy_utils import ChoiceType
 
 from app.core.database import Base
 from app.core.config import settings
+from app.points.constants import WORKING_SCHEDULE
 
 
 def same_as(column_name):
@@ -28,6 +29,7 @@ class Points(Base):
     region_id = Column(
         ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
     )
+    working_schedule = Column(ChoiceType(WORKING_SCHEDULE), default="middle")
     name = Column(String, nullable=True, default=same_as("addres"))
     region = relationship("Regions", back_populates="points")
     managers = relationship("Users", back_populates="points")

@@ -25,3 +25,15 @@ class PointsDAO(BaseDAO):
             )
             logger(get_objs, searching_address)
             return get_objs.mappings().all()
+
+    @classmethod
+    async def get_points_by_region_id(cls, region_id: int):
+        async with async_session_maker() as session:
+            get_objs = await session.execute(
+                select(cls.model.__table__.columns)
+                .where(
+                    Points.region_id == region_id
+                )
+                .order_by("point_id")
+            )
+            return get_objs.mappings().all()
