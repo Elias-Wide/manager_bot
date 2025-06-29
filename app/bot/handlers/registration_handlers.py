@@ -15,8 +15,7 @@ from app.bot.filters import (
     UserExistFilter,
 )
 from app.bot.keyboards.registration_kb import create_registration_kb
-from app.bot.keyboards.captions import Captions
-from app.bot.lexicon import RegistrationQuestions
+from app.bot.keyboards.captions import captions
 from app.bot.states import RegistrationStates
 from app.users.dao import UsersDAO
 
@@ -31,7 +30,7 @@ async def begin_registration(
     state: FSMContext,
 ) -> None:
     await message.answer(
-        Captions.bot_first_message,
+        captions.bot_first_message,
         reply_markup=await create_registration_kb(),
     )
     await state.set_state(RegistrationStates.consent_confirm)
@@ -44,7 +43,7 @@ async def name_question(
     callback: CallbackQuery,
     state: FSMContext,
 ) -> None:
-    await callback.message.answer(text=Captions.name_question)
+    await callback.message.answer(text=captions.name_question)
     await state.set_state(RegistrationStates.name_question)
 
 
@@ -56,7 +55,7 @@ async def name_question(
 async def name_question_error(
     message: Message,
 ) -> None:
-    await message.answer(text=Captions.incorrect_name_format)
+    await message.answer(text=captions.incorrect_name_format)
 
 
 @registration_router.message(
@@ -68,7 +67,7 @@ async def phone_number_question(
     message: Message, state: FSMContext, first_name: str, last_name: str
 ) -> None:
     await state.update_data(first_name=first_name, last_name=last_name)
-    await message.answer(text=Captions.phone_number_question)
+    await message.answer(text=captions.phone_number_question)
     await state.set_state(RegistrationStates.phone_number_question)
 
 
@@ -78,7 +77,7 @@ async def phone_number_question(
     ~F.text.regexp(r"^\+7\d{10}$"),
 )
 async def phone_number_question_error(message: Message) -> None:
-    await message.answer(text=Captions.incorrect_phone_number)
+    await message.answer(text=captions.incorrect_phone_number)
 
 
 @registration_router.message(
@@ -91,44 +90,44 @@ async def ask_point_id_question(
     state: FSMContext,
 ) -> None:
     await state.update_data(phone_number=message.text.strip())
-    await message.answer(text=Captions.point_id_question)
+    await message.answer(text=captions.point_id_question)
     await state.set_state(RegistrationStates.point_id_question)
 
 
 @registration_router.message(
     RegistrationStates.point_id_question,
-    F.text.is_digit(),
+    ~F.text.regexp(r"^\d+$"),
+)
+async def point_id_question_error(
+    message: Message,
+) -> None:
+    await message.answer(
+        text=captions.incorrect_point_id_format,
+    )
+
+
+@registration_router.message(
+    RegistrationStates.point_id_question,
+    F.text.regexp(r"^\d+$"),
     ~PointExistFilter(),
 )
 async def point_id_question_error(
     message: Message,
 ) -> None:
     await message.answer(
-        text=Captions.incorrect_point_id,
+        text=captions.incorrect_point_id,
     )
 
 
 @registration_router.message(
     RegistrationStates.point_id_question,
-    ~F.text.is_digit(),
-)
-async def point_id_question_error(
-    message: Message,
-) -> None:
-    await message.answer(
-        text=Captions.incorrect_point_id_format,
-    )
-
-
-@registration_router.message(
-    RegistrationStates.point_id_question,
-    F.text.is_digit(),
+    F.text.regexp(r"^\d+$"),
     PointExistFilter(),
 )
 async def finish_registration(
     message: Message,
     state: FSMContext,
-    point_id: int,
+    id: int,
 ) -> None:
     data = await state.get_data()
     await UsersDAO.create(
@@ -137,6 +136,6 @@ async def finish_registration(
         first_name=data["first_name"],
         last_name=data["last_name"],
         phone_number=data["phone_number"],
-        point_id=point_id,
+        point_id=id,
     )
     await state.clear()

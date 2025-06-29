@@ -4,6 +4,7 @@ from sqlalchemy import (
     Column,
     Date,
     Integer,
+    ForeignKey,
     String,
     UniqueConstraint,
 )
@@ -21,12 +22,14 @@ class Users(Base):
     username = Column(String, nullable=False)
     is_region_admin = Column(BOOLEAN, default=False)
     ban = Column(BOOLEAN, default=False)
-    point_id = Column(Integer, nullable=False)
+    point_id = Column(ForeignKey("points.id"), nullable=False)
     points = relationship(
         "Points",
         back_populates="managers",
-        cascade="all, delete-orphan",
-        passive_deletes=True,
+    )
+    work_days = relationship(
+        "WorkDays",
+        back_populates="user",
     )
 
     __table_args__ = (
@@ -49,8 +52,13 @@ class WorkDays(Base):
         day: Date of the workday.
     """
 
-    user_id = Column(BigInteger, nullable=False)
+    user_id = Column(
+        Integer,
+        ForeignKey("users.telegram_id", ondelete="CASCADE"),
+        nullable=False,
+    )
     day = Column(Date, nullable=False)
+    user = relationship(Users, back_populates="work_days")
 
     __table_args__ = (
         UniqueConstraint(

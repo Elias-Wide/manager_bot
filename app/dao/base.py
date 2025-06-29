@@ -83,7 +83,6 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 elif isinstance(error, Exception):
                     message = "Unknown Exception"
                 message += ": Unable to add data."
-                logger.error(message)
                 raise error
 
     @classmethod
@@ -113,7 +112,6 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 await session.refresh(db_obj)
                 return db_obj
             except Exception as error:
-                logger.error(error)
                 await session.rollback()
                 raise error
 
@@ -140,7 +138,6 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 await session.commit()
                 return object_to_delete
             except Exception as error:
-                logger.error(error)
                 return None
 
     @classmethod
