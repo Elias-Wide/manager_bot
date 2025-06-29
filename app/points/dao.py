@@ -2,7 +2,6 @@ from sqlalchemy import and_, func, insert, select
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
 from app.points.models import Points
-from app.core.logging import logger
 
 
 class PointsDAO(BaseDAO):
@@ -23,7 +22,6 @@ class PointsDAO(BaseDAO):
                 )
                 .order_by("addres")
             )
-            logger(get_objs, searching_address)
             return get_objs.mappings().all()
 
     @classmethod
@@ -31,9 +29,7 @@ class PointsDAO(BaseDAO):
         async with async_session_maker() as session:
             get_objs = await session.execute(
                 select(cls.model.__table__.columns)
-                .where(
-                    Points.region_id == region_id
-                )
+                .where(Points.region_id == region_id)
                 .order_by("point_id")
             )
             return get_objs.mappings().all()

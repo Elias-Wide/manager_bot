@@ -6,6 +6,7 @@ from sqlalchemy_utils import ChoiceType
 from app.core.database import Base
 from app.core.config import settings
 from app.points.constants import WORKING_SCHEDULE
+from app.regions.models import Regions
 
 
 def same_as(column_name):
@@ -24,7 +25,7 @@ class Points(Base):
         trades: созданные модели обмена кодами
         managers: менеджеры офиса
     """
-    id = Column(Integer, nullable=False, unique=True) 
+
     addres = Column(String, nullable=False)
     region_id = Column(
         ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
@@ -33,8 +34,6 @@ class Points(Base):
     name = Column(String, nullable=True, default=same_as("addres"))
     region = relationship("Regions", back_populates="points")
     managers = relationship("Users", back_populates="points")
-    
+
     def __str__(self):
         return f"{self.addres}"
-    
-    

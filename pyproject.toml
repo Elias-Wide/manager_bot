@@ -7,7 +7,13 @@ requires-python = ">=3.12"
 dependencies = [
     "aiogram>=3.20.0.post0",
     "alembic>=1.16.2",
+    "asyncpg>=0.30.0",
+    "black>=25.1.0",
+    "fastapi>=0.115.14",
+    "openpyxl>=3.1.5",
+    "pydantic-settings>=2.10.1",
     "sqlalchemy>=2.0.41",
     "sqlalchemy-utils>=0.41.2",
+    "uvicorn>=0.35.0",
 ]
 

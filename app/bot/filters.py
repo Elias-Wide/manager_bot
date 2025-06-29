@@ -4,6 +4,7 @@ from aiogram.filters import BaseFilter
 from aiogram.types import Message
 
 from app.core.config import settings
+from app.points.dao import PointsDAO
 from app.users.dao import UsersDAO
 
 
@@ -40,7 +41,6 @@ class UserExistFilter(BaseFilter):
         )
         if obj:
             return {self.attr_name: attr_value, "model_obj": obj}
-        logger(False)
         return False
 
 
@@ -88,3 +88,33 @@ class AdminFilter(BaseFilter):
         if message.from_user.id == int(settings.telegram.admin_id):
             return True
         return False
+
+
+class NameValidationFilter(BaseFilter):
+
+    async def __call__(self, message: Message) -> bool:
+        """
+        Validate the name format in the message.
+
+        Args:
+            message (Message): The incoming message object.
+
+        Returns:
+            bool: True if the name is valid, otherwise False.
+        """
+        if not message.text or len(message.text.split()) != 2:
+            return False
+        first_name, last_name = message.text.split()
+        if not (first_name.isalpha() and last_name.isalpha()):
+            return False
+        return {"first_name": first_name, "last_name": last_name}
+
+
+class PointExistFilter(UserExistFilter):
+    """
+    Filter class to check if a point exists based on its ID.
+    """
+
+    def __init__(self) -> None:
+        self.modelDAO = PointsDAO
+        self.attr_name = "point_id"

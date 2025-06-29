@@ -15,13 +15,20 @@ from app.core.database import Base
 class Users(Base):
 
     telegram_id = Column(BigInteger, unique=True, nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=True)
     phone_number = Column(Integer, nullable=False, unique=True)
     username = Column(String, nullable=False)
-    is_region_admin = Column(BOOLEAN, default=False) 
+    is_region_admin = Column(BOOLEAN, default=False)
     ban = Column(BOOLEAN, default=False)
     point_id = Column(Integer, nullable=False)
-    
-    
+    points = relationship(
+        "Points",
+        back_populates="managers",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
     __table_args__ = (
         UniqueConstraint(
             "telegram_id",
@@ -29,6 +36,7 @@ class Users(Base):
             name="unique_phone_number_tg_id",
         ),
     )
+
     def __str__(self):
         return f"User @{self.username}"
 
@@ -40,6 +48,7 @@ class WorkDays(Base):
         user_id: Telegram ID of the user.
         day: Date of the workday.
     """
+
     user_id = Column(BigInteger, nullable=False)
     day = Column(Date, nullable=False)
 

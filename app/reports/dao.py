@@ -15,5 +15,3 @@ class ReportsDAO(BaseDAO):
     @classmethod
     async def get_reports_by_region(region_id: int) -> list[Reports] | None:
         pass
-    
-    
