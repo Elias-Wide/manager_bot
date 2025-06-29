@@ -5,12 +5,10 @@ from aiogram.types import CallbackQuery, Message
 
 
 from app.bot.handlers.callbacks.main_menu import (
-    get_menucallback_data,
     procces_main_menu_comand,
 )
-from app.bot.keyboards.buttons import MAIN_MENU_PAGES, QR_MENU
+from app.bot.keyboards.buttons import MAIN_MENU_PAGES
 from app.bot.keyboards.main_kb_builder import MenuCallBack
-from app.core.logging import logger
 
 
 user_router = Router()

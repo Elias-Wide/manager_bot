@@ -1,5 +1,3 @@
-"""Модуль по созданию клавиатур в меню."""
-
 from typing import TypeAlias
 
 from aiogram.types import (
@@ -12,14 +10,11 @@ from aiogram.types import (
 from aiogram import Bot
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-# from app.bot.keyboards.banners import get_img
-from app.bot.keyboards.buttons import BACK_BTN
-from app.core.constants import (
-    DEFAULT_KEYBOARD_SIZE,
-    MAIN_MENU,
-    MAIN_MENU_COMMANDS,
-)
+from app.bot.keyboards.banners import get_img
+from app.core.constants import DEFAULT_KEYBOARD_SIZE
+
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
+from app.bot.keyboards.buttons import BACK_BTN, MAIN_MENU, MAIN_MENU_COMMANDS
 from app.core.config import settings
 
 
@@ -27,7 +22,7 @@ KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
 
 
 async def set_main_menu(bot: Bot) -> None:
-    """Установить основное меню, назначить команды с описаниями."""
+    """Set the main menu and assign commands with descriptions."""
     main_menu_commands = [
         BotCommand(command=command, description=description)
         for command, description in MAIN_MENU_COMMANDS.items()
@@ -43,15 +38,14 @@ async def get_btns(
     level: int = 0,
     size: int = DEFAULT_KEYBOARD_SIZE,
     btns_data: tuple[str, str] | None = None,
-    point_id: int | None = None,
     user_id: int | None = None,
     previous_menu: str = MAIN_MENU,
     need_back_btn: bool = True,
 ) -> list[InlineKeyboardButton]:
     """
-    Создание клавиатуры.
-    Текст кнопок и колбэк дата берется из констант модуля buttons.
-    Если btns_data нет - создается только кнопка Назад.
+    Create a keyboard.
+    The button text and callback data are taken from the buttons module constants.
+    If btns_data is not provided, only the Back button is created.
     """
     kb_builder = InlineKeyboardBuilder()
     btns = []
@@ -63,8 +57,6 @@ async def get_btns(
                     callback_data=MenuCallBack(
                         level=level + 1,
                         menu_name=menu_name,
-                        user_id=user_id,
-                        point_id=point_id,
                     ).pack(),
                 ),
             )
@@ -75,10 +67,38 @@ async def get_btns(
                 callback_data=MenuCallBack(
                     user_id=user_id,
                     level=level - 1,
-                    point_id=point_id,
                     menu_name=previous_menu,
                 ).pack(),
             )
         )
     kb_builder.row(*btns, width=size)
     return kb_builder.as_markup()
+
+
+async def get_image_and_kb(
+    menu_name: str,
+    user_id: int,
+    next_menu: str | None = None,
+    btns_data: tuple[str, str] | None = None,
+    level: int = 0,
+    previous_menu: str = MAIN_MENU,
+    size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
+    need_back_btn: bool = True,
+) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
+    """
+    Aggregate function for creating a keyboard.
+    Returns an image with a description and a keyboard for the menu.
+    """
+    return (
+        await get_img(menu_name=menu_name),
+        await get_btns(
+            menu_name=menu_name,
+            next_menu=next_menu,
+            level=level,
+            size=size,
+            btns_data=btns_data,
+            user_id=user_id,
+            previous_menu=previous_menu,
+            need_back_btn=need_back_btn,
+        ),
+    )

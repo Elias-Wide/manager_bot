@@ -16,7 +16,9 @@ class Regions(Base):
     points: связь с моделью points
     """
 
-    ceo_id = Column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    ceo_id = Column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
     name = Column(String, nullable=False, unique=True)
     points = relationship("Points", back_populates="region")
     ceo = relationship("Users", backref="region")

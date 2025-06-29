@@ -22,6 +22,12 @@ class Users(Base):
     is_region_admin = Column(BOOLEAN, default=False)
     ban = Column(BOOLEAN, default=False)
     point_id = Column(Integer, nullable=False)
+    points = relationship(
+        "Points",
+        back_populates="managers",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     __table_args__ = (
         UniqueConstraint(

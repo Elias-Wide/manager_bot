@@ -9,6 +9,7 @@ from app.bot.init_bot import bot, dp, stop_bot, start_bot
 
 from app.core.config import settings
 from app.core.database import engine
+from app.bot.routers import main_router
 
 WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
 WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
@@ -23,6 +24,7 @@ async def lifespan(app: FastAPI):
         allowed_updates=dp.resolve_used_update_types(),
         drop_pending_updates=True,
     )
+    dp.include_router(main_router)
     logging.info(f"Webhook set to {WEBHOOK_URL}")
     yield
     logging.info("Shutting down bot...")
