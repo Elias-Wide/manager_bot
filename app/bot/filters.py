@@ -8,11 +8,52 @@ from app.points.dao import PointsDAO
 from app.users.dao import UsersDAO
 
 
-class UserExistFilter(BaseFilter):
+class ObjectExistFilter(BaseFilter):
+    """
+    Base filter to check if an object exists in the database by a given attribute.
+
+    Args:
+        modelDAO: Data access object for the model.
+        attr_name: Attribute name to filter by.
+
+    Returns:
+        dict: Dictionary with attribute and model object if found.
+        bool: False if object does not exist.
+    """
+
+    def init(self, modelDAO: UsersDAO | PointsDAO, attr_name: str) -> None:
+        self.modelDAO = modelDAO
+        self.attr_name: str = attr_name
+
+    async def __call__(
+        self,
+        attr_name: str,
+        attr_value: int,
+    ) -> bool | dict[str]:
+        """
+        Check if an object exists in the database by attribute.
+
+        Args:
+            attr_name (str): Attribute name.
+            attr_value (int): Attribute value.
+
+        Returns:
+            dict: Object data if found, otherwise False.
+        """
+        obj = await self.modelDAO.get_by_attribute(
+            attr_name=attr_name, attr_value=attr_value
+        )
+        if obj:
+            return {self.attr_name: attr_value, "model_obj": obj}
+        return False
+
+
+class UserExistFilter(ObjectExistFilter):
     """
     Filter class to check if a user exists based on their Telegram ID.
 
-    Returns True for a registered user.
+    Returns:
+        bool: True for a registered user, otherwise False.
     """
 
     def __init__(self) -> None:
@@ -32,16 +73,8 @@ class UserExistFilter(BaseFilter):
         Returns:
             bool: True if the user exists, otherwise False.
         """
-        if self.attr_name == "telegram_id":
-            attr_value = message.from_user.id
-        else:
-            attr_value = int(message.text)
-        obj = await self.modelDAO.get_by_attribute(
-            attr_name=self.attr_name, attr_value=attr_value
-        )
-        if obj:
-            return {self.attr_name: attr_value, "model_obj": obj}
-        return False
+        attr_value = message.from_user.id
+        return await super().__call__(self.attr_name, attr_value)
 
 
 class BanFilter(UserExistFilter):
@@ -50,6 +83,9 @@ class BanFilter(UserExistFilter):
 
     Inherits from UserExistFilter to perform a basic registration check
     and adds a ban status check.
+
+    Returns:
+        bool: False if the user is banned, otherwise the user object.
     """
 
     async def __call__(self, message: Message):
@@ -72,7 +108,8 @@ class AdminFilter(BaseFilter):
     """
     Filter class to check if the user has admin rights.
 
-    Returns True if the user is the admin.
+    Returns:
+        bool: True if the user is the admin, otherwise False.
     """
 
     async def __call__(self, message: Message):
@@ -91,6 +128,12 @@ class AdminFilter(BaseFilter):
 
 
 class NameValidationFilter(BaseFilter):
+    """
+    Filter class to validate the format of a user's name and surname.
+
+    Returns:
+        dict: Dictionary with first_name and last_name if valid, otherwise False.
+    """
 
     async def __call__(self, message: Message) -> bool:
         """
@@ -100,7 +143,7 @@ class NameValidationFilter(BaseFilter):
             message (Message): The incoming message object.
 
         Returns:
-            bool: True if the name is valid, otherwise False.
+            dict: Dictionary with first_name and last_name if valid, otherwise False.
         """
         if not message.text or len(message.text.split()) != 2:
             return False
@@ -110,11 +153,27 @@ class NameValidationFilter(BaseFilter):
         return {"first_name": first_name, "last_name": last_name}
 
 
-class PointExistFilter(UserExistFilter):
+class PointExistFilter(ObjectExistFilter):
     """
     Filter class to check if a point exists based on its ID.
+
+    Returns:
+        bool: True if the point exists, otherwise False.
     """
 
     def __init__(self) -> None:
         self.modelDAO = PointsDAO
-        self.attr_name = "point_id"
+        self.attr_name = "id"
+
+    async def __call__(self, message: Message) -> bool:
+        """
+        Check if the point exists in the database.
+
+        Args:
+            message (Message): The incoming message object.
+
+        Returns:
+            bool: True if the point exists, otherwise False.
+        """
+        attr_value = int(message.text)
+        return await super().__call__(self.attr_name, attr_value)

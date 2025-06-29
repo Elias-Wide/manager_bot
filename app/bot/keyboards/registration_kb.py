@@ -10,7 +10,7 @@ from aiogram.types import (
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.bot.keyboards.buttons import CONFIRM_REGISTRATION
-from app.core.constants import DEFAULT_KEYBOARD_SIZE, MAIN_MENU
+from app.core.constants import DEFAULT_KEYBOARD_SIZE
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
 
