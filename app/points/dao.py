@@ -31,9 +31,7 @@ class PointsDAO(BaseDAO):
         async with async_session_maker() as session:
             get_objs = await session.execute(
                 select(cls.model.__table__.columns)
-                .where(
-                    Points.region_id == region_id
-                )
+                .where(Points.region_id == region_id)
                 .order_by("point_id")
             )
             return get_objs.mappings().all()

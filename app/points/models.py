@@ -24,17 +24,14 @@ class Points(Base):
         trades: созданные модели обмена кодами
         managers: менеджеры офиса
     """
-    id = Column(Integer, nullable=False, unique=True) 
+
+    id = Column(Integer, nullable=False, unique=True)
     addres = Column(String, nullable=False)
-    region_id = Column(
-        ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
-    )
+    region_id = Column(ForeignKey("regions.id", ondelete="SET NULL"), nullable=True)
     working_schedule = Column(ChoiceType(WORKING_SCHEDULE), default="middle")
     name = Column(String, nullable=True, default=same_as("addres"))
     region = relationship("Regions", back_populates="points")
     managers = relationship("Users", back_populates="points")
-    
+
     def __str__(self):
         return f"{self.addres}"
-    
-    

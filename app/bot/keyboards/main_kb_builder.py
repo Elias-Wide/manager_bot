@@ -82,4 +82,3 @@ async def get_btns(
         )
     kb_builder.row(*btns, width=size)
     return kb_builder.as_markup()
-

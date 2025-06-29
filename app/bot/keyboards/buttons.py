@@ -1,6 +1,6 @@
 """
 Модуль констант для текста и колбэкдата кнопок.
-Сначала идут "простые" константы в алфавитном порядке, 
+Сначала идут "простые" константы в алфавитном порядке,
 потом сложные - dict, tuple.
 """
 
@@ -19,6 +19,9 @@ SEND_QR: str = "qr_send"
 SCHEDULE: str = "schedule"
 UPDATE_QR: str = "qr_update"
 
+CONFIRM_REGISTRATION: dict[str, str] = {
+    "confirm": "Зарегистрироваться✅",
+}
 CONFIRM_SCHEDULE_BTN: tuple[str] = (CONFIRM_SCHEDULE, "Сохранить график 📝")
 CALENDAR_BTNS: tuple[tuple[str]] = tuple(
     (NONE_MENU, text) for text in ("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
@@ -32,6 +35,4 @@ MAIN_MENU_PAGES: tuple[str] = (
     MAIN_MENU,
     PROFILE,
 )
-PROFILE_MENU_BTNS: tuple[tuple[str]] = (
-    (SCHEDULE, "График работы 🗓"),
-)
+PROFILE_MENU_BTNS: tuple[tuple[str]] = ((SCHEDULE, "График работы 🗓"),)
