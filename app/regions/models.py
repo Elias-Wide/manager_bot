@@ -22,4 +22,4 @@ class Regions(Base):
     ceo = relationship("Users", backref="region")
 
     def __str__(self):
-        return f"Region {self.name}"
+        return f"{self.name}"

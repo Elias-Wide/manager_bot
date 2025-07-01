@@ -9,13 +9,6 @@ from app.points.constants import WORKING_SCHEDULE
 from app.regions.models import Regions
 
 
-def same_as(column_name):
-    def default_function(context):
-        return context.current_parameters.get(column_name)
-
-    return default_function
-
-
 class Points(Base):
     """Модель офиса.
 
@@ -29,7 +22,6 @@ class Points(Base):
     addres = Column(String, nullable=False)
     region_id = Column(ForeignKey("regions.id", ondelete="SET NULL"), nullable=True)
     working_schedule = Column(ChoiceType(WORKING_SCHEDULE), default="middle")
-    name = Column(String, nullable=True, default=same_as("addres"))
     region = relationship("Regions", back_populates="points")
     managers = relationship("Users", back_populates="points")
 
