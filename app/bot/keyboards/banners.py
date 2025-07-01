@@ -14,6 +14,7 @@ async def get_img(
     menu_name: str,
     file_dir: str = BANNERS_DIR,
     f_type: str = FMT_JPG,
+    caption: str | None = None,
 ) -> InputMediaPhoto:
     """
     Get an image with a caption.
@@ -21,10 +22,11 @@ async def get_img(
     If there is no description, it is taken from the Captions class.
     If the required image is not found, the 'no_image' picture is used.
     """
+    if not caption:
+        caption = getattr(captions, menu_name)
     media = await get_file(menu_name, file_dir, f_type)
     return InputMediaPhoto(
-        media=await get_file(menu_name, file_dir, f_type),
-        caption=getattr(captions, menu_name),
+        media=await get_file(menu_name, file_dir, f_type), caption=caption
     )
 
 

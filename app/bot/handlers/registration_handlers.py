@@ -89,7 +89,7 @@ async def ask_point_id_question(
     message: Message,
     state: FSMContext,
 ) -> None:
-    await state.update_data(phone_number=message.text.strip())
+    await state.update_data(phone_number=message.text.strip()[2:])
     await message.answer(text=captions.point_id_question)
     await state.set_state(RegistrationStates.point_id_question)
 
@@ -129,13 +129,12 @@ async def finish_registration(
     state: FSMContext,
     id: int,
 ) -> None:
-    data = await state.get_data()
-    await UsersDAO.create(
+    await state.update_data(
         telegram_id=message.from_user.id,
         username=message.from_user.username,
-        first_name=data["first_name"],
-        last_name=data["last_name"],
-        phone_number=data["phone_number"],
         point_id=id,
     )
+    user_data = await state.get_data()
+    print(user_data)
+    await UsersDAO.create(user_data)
     await state.clear()

@@ -14,4 +14,5 @@ class MenuCallBack(CallbackData, prefix="menu"):
 
     level: int = 0
     user_id: int | None = None
+    day: str | None = None
     menu_name: str

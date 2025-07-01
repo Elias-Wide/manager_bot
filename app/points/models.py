@@ -27,9 +27,7 @@ class Points(Base):
     """
 
     addres = Column(String, nullable=False)
-    region_id = Column(
-        ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
-    )
+    region_id = Column(ForeignKey("regions.id", ondelete="SET NULL"), nullable=True)
     working_schedule = Column(ChoiceType(WORKING_SCHEDULE), default="middle")
     name = Column(String, nullable=True, default=same_as("addres"))
     region = relationship("Regions", back_populates="points")
