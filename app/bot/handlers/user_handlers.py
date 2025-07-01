@@ -6,24 +6,29 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 
+from app.bot.filters import PointExistFilter
 from app.bot.handlers.callbacks.main_menu import (
     get_menu,
     procces_main_menu_comand,
 )
 from app.bot.keyboards.banners import get_img
 from app.bot.keyboards.buttons import (
+    CHOOSE_OFFICE,
     CONFIRM_SCHEDULE,
     CRITICAL_ERROR,
     EMPTY_BTN,
     MAIN_MENU_PAGES,
     NONE_MENU,
+    OTHER_OFFICE_REPORT,
     PROFILE_MENU,
+    REPORTS_MENU,
     SCHEDULE,
 )
 from app.bot.keyboards.calendar_kb import get_days_btns
-from app.bot.keyboards.main_kb_builder import MenuCallBack
-from app.bot.states import ProfileStates
+from app.bot.keyboards.main_kb_builder import MenuCallBack, get_btns
+from app.bot.states import ProfileStates, ReportsStates
 from app.core.constants import DATE_FORMAT
+from app.points.models import Points
 from app.users.dao import UsersDAO, WorkDaysDAO
 from app.users.models import Users
 
@@ -159,3 +164,106 @@ async def proccess_empty_btn(
     """Обработка нажатий пустых кнопок с днями недели в календаре."""
     await callback.answer(text=EMPTY_BTN)
     await procce_set_schedule(callback, callback_data, state)
+
+
+@user_router.callback_query(
+    MenuCallBack.filter(
+        F.menu_name.in_(
+            OTHER_OFFICE_REPORT,
+        )
+    ),
+    default_state,
+)
+async def choose_office(
+    callback: CallbackQuery,
+    callback_data: MenuCallBack,
+    state: FSMContext,
+) -> None:
+    """
+    Обработка нажатия кнопки выбора офиса для отчета.
+    Переход к следующему состоянию для выбора офиса.
+    """
+    await state.set_state(ReportsStates.choose_office)
+    await callback.message.edit_media(
+        media=await get_img(CHOOSE_OFFICE),
+        reply_markup=await get_btns(
+            menu_name=REPORTS_MENU,
+            previous_menu=REPORTS_MENU,
+            level=2,
+            need_back_btn=True,
+        ),
+    )
+
+
+@user_router.message(ReportsStates.choose_office, F.text.isdigit(), PointExistFilter())
+async def send_report_photo(
+    message: Message, state: FSMContext, model_obj: Points
+) -> None:
+    """
+    Обработка ввода ID офиса для отчета.
+    Переход к следующему состоянию для отправки фото отчета.
+    """
+    point_id = int(message.text)
+    btn_text = (
+        f"Пункт {model_obj.addres} iD{model_obj.id}\n\n" f"Загрузите фото для отчета."
+    )
+    await state.update_data(point_id=point_id)
+    await state.set_state(ReportsStates.send_photo)
+    await message.answer(text=btn_text)
+
+
+@user_router.message(ReportsStates.choose_office, F.text.isdigit(), ~PointExistFilter())
+async def incorrect_office_id_handler(message: Message, state: FSMContext) -> None:
+    """
+    Обработка некорректного ввода ID офиса.
+    Отправка сообщения об ошибке.
+    """
+    await message.answer(text="Пункт отсутствует в бд.")
+
+
+@user_router.message(ReportsStates.choose_office, ~F.text.isdigit())
+async def incorrect_office_id_format_handler(
+    message: Message, state: FSMContext
+) -> None:
+    """
+    Обработка некорректного формата ID офиса.
+    Отправка сообщения об ошибке.
+    """
+    await message.answer(text="ID  офиса должен быть числом.")
+
+
+@user_router.message(ReportsStates.send_photo, F.photo)
+async def send_report_photo_handler(
+    message: Message,
+    state: FSMContext,
+) -> None:
+    """
+    Обработка отправки фото отчета.
+    Сохранение фото и переход к следующему состоянию.
+    """
+    user_data = await state.get_data()
+    point_id = user_data.get("point_id")
+    photo = message.photo[-1]
+    try:
+        # await UsersDAO.save_report_photo(
+        #     user_id=message.from_user.id,
+        #     point_id=point_id,
+        #     photo=photo.file_id
+        # )
+        await message.answer(text="Фото успешно отправлено!")
+        await state.clear()
+    except Exception as error:
+        print(error)
+        await message.answer(text=CRITICAL_ERROR, show_alert=True)
+
+
+@user_router.message(ReportsStates.send_photo, ~F.photo)
+async def incorrect_photo_handler(
+    message: Message,
+    state: FSMContext,
+) -> None:
+    """
+    Обработка некорректного формата фото отчета.
+    Отправка сообщения об ошибке.
+    """
+    await message.answer(text="Отправьте фото для отчета.")
