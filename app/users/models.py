@@ -54,7 +54,7 @@ class WorkDays(Base):
 
     user_id = Column(
         Integer,
-        ForeignKey("users.telegram_id", ondelete="CASCADE"),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
     )
     day = Column(Date, nullable=False)

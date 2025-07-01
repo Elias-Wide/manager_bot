@@ -16,9 +16,7 @@ MAIN_MENU: str = "main_menu"
 PROFILE_MENU: str = "profile_menu"
 REPORT: str = "report"
 SET_SCHEDULE: str = "set_schedule"
-SEND_QR: str = "qr_send"
 SCHEDULE: str = "schedule"
-UPDATE_QR: str = "qr_update"
 
 CONFIRM_REGISTRATION: dict[str, str] = {
     "confirm": "Зарегистрироваться✅",
@@ -29,8 +27,6 @@ CALENDAR_BTNS: tuple[tuple[str]] = tuple(
 )
 MAIN_MENU_COMMANDS: dict[str] = {
     "/start": "Перезапуск бота/открыть меню",
-    "/profile": "Меню профиля",
-    "/report": "Отчет прихода",
 }
 
 MAIN_MENU_BUTTONS: tuple[tuple[str]] = (

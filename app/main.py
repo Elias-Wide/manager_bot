@@ -5,6 +5,7 @@ import logging
 import uvicorn
 
 from app.bot.init_bot import bot, dp, stop_bot, start_bot
+from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.core.config import settings
 from app.core.database import engine
 from app.bot.handlers.registration_handlers import registration_router
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
         allowed_updates=dp.resolve_used_update_types(),
         drop_pending_updates=True,
     )
+    await set_main_menu(bot)
     dp.include_router(main_router)
     dp.include_router(registration_router)
     # dp.include_router(admin_router)

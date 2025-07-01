@@ -23,7 +23,6 @@ from app.bot.keyboards.buttons import (
     MONTH,
     PROFILE_MENU,
     SCHEDULE,
-    SEND_QR,
 )
 from app.core.config import settings
 
@@ -103,8 +102,8 @@ async def get_days_btns(
             text=BACK_BTN,
             callback_data=MenuCallBack(
                 user_id=user_id,
-                level=level - 1,
-                menu_name=previous_menu,
+                level=level,
+                menu_name=PROFILE_MENU,
             ).pack(),
         )
     )
@@ -113,7 +112,7 @@ async def get_days_btns(
             text=CONFIRM_SCHEDULE_BTN[1],
             callback_data=MenuCallBack(
                 user_id=user_id,
-                level=level - 1,
+                level=level,
                 menu_name=CONFIRM_SCHEDULE_BTN[0],
             ).pack(),
         )

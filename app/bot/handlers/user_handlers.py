@@ -73,8 +73,12 @@ async def set_user_schedule(
             attr_name="telegram_id", attr_value=callback.from_user.id
         )
         callback_data.user_id = user.id
-        user_schedule = await WorkDaysDAO.get_user_working_days(user_id=user.id)
-        print(user_schedule)
+        user_schedule = [
+            w_day.day
+            for w_day in await WorkDaysDAO.get_user_working_days(
+                user_id=callback_data.user_id
+            )
+        ]
         await callback.message.edit_media(
             media=await get_img(SCHEDULE),
             reply_markup=await get_days_btns(
@@ -83,7 +87,6 @@ async def set_user_schedule(
                 user_schedule=user_schedule.copy(),
             ),
         )
-        # await state.update_data(user_id=user.id)
         await state.update_data(user_id=user.id, user_schedule=sorted(user_schedule))
         await state.set_state(ProfileStates.set_schedule)
     except Exception as error:
@@ -99,24 +102,25 @@ async def procce_set_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ):
     """Обработка нажатий кнопок календаря."""
+    user = await UsersDAO.get_by_attribute(
+        attr_name="telegram_id", attr_value=callback.from_user.id
+    )
+    await state.update_data(user_id=user.id)
     state_data = await state.get_data()
     user_schedule = state_data["user_schedule"]
     print(user_schedule)
     if callback_data.menu_name == CONFIRM_SCHEDULE:
         print(state_data["user_schedule"])
         try:
-            # await WorkDaysDAO.set_user_schedule(
-            #     user_id=state_data["user_id"],
-            #     work_days=user_schedule
-            # )
-            await state.clear()
-            await callback.answer(
-                text="График успешно сохранен. Не забудьте включить уведомления по графику."
+            await WorkDaysDAO.set_user_schedule(
+                user_id=user.id, work_days=user_schedule
             )
+            await state.clear()
+            await callback.answer(text="График успешно сохранен.")
             callback_data.level, callback_data.menu_name = 1, PROFILE_MENU
             await get_menu(callback, callback_data)
-        except:
-            print("CONFIRM_SCHEDULE ERROR")
+        except Exception as error:
+            print("CONFIRM_SCHEDULE ERROR", error)
             await callback.answer(text=CRITICAL_ERROR, show_alert=True)
     else:
         if callback_data.day:

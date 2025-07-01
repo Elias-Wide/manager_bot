@@ -28,9 +28,11 @@ async def get_menu_content(
     level: int,
     user_id: int,
 ) -> tuple[InputMediaPhoto | InlineKeyboardMarkup]:
+    print(f"get_menu_content: {menu_name=}, {level=}, {user_id=}")
     if menu_name == MAIN_MENU:
         return await get_image_and_kb(
             menu_name=menu_name,
+            level=0,
             user_id=user_id,
             need_back_btn=False,
             btns_data=MAIN_MENU_BUTTONS,
