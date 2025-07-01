@@ -2,15 +2,18 @@ from aiogram.types import Update
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 import logging
+from sqladmin import Admin
 import uvicorn
 
+from app.admin.adminview import admin_views
+from app.admin.auth import authentication_backend
 from app.bot.init_bot import bot, dp, stop_bot, start_bot
 from app.bot.keyboards.main_kb_builder import set_main_menu
-from app.core.config import settings
-from app.core.database import engine
+from app.bot.handlers.admin_handlers import admin_router
 from app.bot.handlers.registration_handlers import registration_router
 from app.bot.routers import main_router
-from app.bot.handlers.admin_handlers import admin_router
+from app.core.config import settings
+from app.core.database import engine
 
 WEBHOOK_PATH = f"/bot/{settings.telegram.bot_token.get_secret_value()}"
 WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
@@ -46,3 +49,13 @@ async def webhook(request: Request) -> None:
     update = Update.model_validate(await request.json(), context={"bot": bot})
     await dp.feed_update(bot, update)
     logging.info("Update processed")
+
+
+admin = Admin(
+    app=app,
+    engine=engine,
+    authentication_backend=authentication_backend,
+)
+
+for view in admin_views:
+    admin.add_view(view)

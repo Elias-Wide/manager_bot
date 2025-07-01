@@ -20,7 +20,7 @@ class Reports(Base):
     img = Column(String, nullable=False)
 
     def __str__(self):
-        return f"Report {self.id} office - {self.point_id} {self.datetime}"
+        return f"Отчет прихода. Офис {self.point_id} {self.datetime}"
 
     __table_args__ = UniqueConstraint(
         "datetime",

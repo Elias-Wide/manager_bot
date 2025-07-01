@@ -19,6 +19,7 @@ class AuthConfig(ConfigBase):
     model_config = SettingsConfigDict(env_prefix="app_")
     admin_email: str
     admin_password: SecretStr
+    admin_sc: SecretStr
 
 
 class TelegramConfig(ConfigBase):
