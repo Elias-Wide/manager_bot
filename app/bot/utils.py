@@ -15,9 +15,7 @@ from app.bot.init_bot import bot
 async def generate_filename() -> str:
     filename = [
         random.choice(
-            string.ascii_lowercase + string.digits
-            if i != 5
-            else string.ascii_uppercase
+            string.ascii_lowercase + string.digits if i != 5 else string.ascii_uppercase
         )
         for i in range(10)
     ]
@@ -85,6 +83,14 @@ async def read_excel_file(message: Message):
     xlsx_file_in_buffer = await download_file_from_bot(message)
     workbook = openpyxl.load_workbook(xlsx_file_in_buffer)
     sheet = workbook.active
+    return [
+        {
+            "id": row[0],
+            "addres": row[1],
+            "name": row[3],
+        }
+        for row in sheet.iter_rows(values_only=True)
+    ]
 
 
 async def download_file_from_bot(message: Message) -> BytesIO:

@@ -16,9 +16,7 @@ from app.core.database import Base
 class Reports(Base):
 
     created_at = Column(DateTime, nullable=False)
-    point_id = Column(
-        ForeignKey("points.id", ondelete="CASCADE"), nullable=True
-    )
+    point_id = Column(ForeignKey("points.id", ondelete="CASCADE"), nullable=True)
     img = Column(String, nullable=False)
 
     def __str__(self):

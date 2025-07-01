@@ -70,9 +70,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         async with async_session_maker() as session:
             try:
-                query = (
-                    insert(cls.model).values(**data).returning(cls.model.id)
-                )
+                query = insert(cls.model).values(**data).returning(cls.model.id)
                 object = await session.execute(query)
                 await session.commit()
                 return object.mappings().first()

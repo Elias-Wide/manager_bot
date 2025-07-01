@@ -13,7 +13,7 @@ EMPTY_BTN: str = "Это пустые кнопки, не балуйся!"
 NONE_MENU = "none"
 MAIN_MENU: str = "main_menu"
 
-PROFILE: str = "profile"
+PROFILE_MENU: str = "profile_menu"
 REPORT: str = "report"
 SET_SCHEDULE: str = "set_schedule"
 SEND_QR: str = "qr_send"
@@ -34,15 +34,40 @@ MAIN_MENU_COMMANDS: dict[str] = {
 }
 
 MAIN_MENU_BUTTONS: tuple[tuple[str]] = (
-    (PROFILE, "Профиль 📋"),
+    (PROFILE_MENU, "Профиль 📋"),
     (REPORT, "Отчет прихода 📨"),
 )
 MAIN_MENU_PAGES: tuple[str] = (
     MAIN_MENU,
-    PROFILE,
+    PROFILE_MENU,
 )
 PROFILE_MENU_BTNS: tuple[tuple[str]] = ((SCHEDULE, "График работы 🗓"),)
 
 
 # IMAGES
-NO_IMAGE: str = "mo_image"
+NO_IMAGE: str = "no_image"
+
+# CALENDAR
+DAY: dict[int, str] = {
+    0: "пн",
+    1: "вт",
+    2: "ср",
+    3: "чт",
+    4: "пт",
+    5: "сб",
+    6: "вс",
+}
+MONTH: dict[int, str] = {
+    1: "Январь",
+    2: "Февраль",
+    3: "Март",
+    4: "Апрель",
+    5: "Май",
+    6: "Июнь",
+    7: "Июль",
+    8: "Август",
+    9: "Сентябрь",
+    10: "Октябрь",
+    11: "Ноябрь",
+    12: "Декабрь",
+}

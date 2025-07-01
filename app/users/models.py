@@ -18,7 +18,7 @@ class Users(Base):
     telegram_id = Column(BigInteger, unique=True, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=True)
-    phone_number = Column(Integer, nullable=False, unique=True)
+    phone_number = Column(String, nullable=False, unique=True)
     username = Column(String, nullable=False)
     is_region_admin = Column(BOOLEAN, default=False)
     ban = Column(BOOLEAN, default=False)
