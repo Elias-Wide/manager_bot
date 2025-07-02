@@ -41,7 +41,9 @@ async def process_start_command(
     message: Message,
     state: FSMContext,
 ) -> None:
-    """После завершения анкетирования. Начало самого бота."""
+    """
+    After completing the registration. Starts the main bot functionality.
+    """
     await procces_main_menu_comand(message)
     await state.clear()
 
@@ -50,7 +52,9 @@ async def process_start_command(
 async def user_menu(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    """Обработка нажатия кнопок меню."""
+    """
+    Handles menu button clicks.
+    """
     await state.clear()
     try:
         await get_menu(callback, callback_data)
@@ -58,7 +62,7 @@ async def user_menu(
     except Exception as error:
         print(error)
         await callback.answer(
-            text="Критическая ошибка / перезапустите бота", show_alert=True
+            text="Critical error / please restart the bot", show_alert=True
         )
 
 
@@ -73,6 +77,9 @@ async def user_menu(
 async def set_user_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
+    """
+    Handles the schedule menu and displays the user's current workdays.
+    """
     try:
         user: Users = await UsersDAO.get_by_attribute(
             attr_name="telegram_id", attr_value=callback.from_user.id
@@ -106,7 +113,9 @@ async def set_user_schedule(
 async def procce_set_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ):
-    """Обработка нажатий кнопок календаря."""
+    """
+    Handles calendar button clicks for setting the user's schedule.
+    """
     user = await UsersDAO.get_by_attribute(
         attr_name="telegram_id", attr_value=callback.from_user.id
     )
@@ -121,7 +130,7 @@ async def procce_set_schedule(
                 user_id=user.id, work_days=user_schedule
             )
             await state.clear()
-            await callback.answer(text="График успешно сохранен.")
+            await callback.answer(text="Schedule saved successfully.")
             callback_data.level, callback_data.menu_name = 1, PROFILE_MENU
             await get_menu(callback, callback_data)
         except Exception as error:
@@ -161,109 +170,8 @@ async def procce_set_schedule(
 async def proccess_empty_btn(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    """Обработка нажатий пустых кнопок с днями недели в календаре."""
+    """
+    Handles clicks on empty calendar buttons (days of the week).
+    """
     await callback.answer(text=EMPTY_BTN)
     await procce_set_schedule(callback, callback_data, state)
-
-
-@user_router.callback_query(
-    MenuCallBack.filter(
-        F.menu_name.in_(
-            OTHER_OFFICE_REPORT,
-        )
-    ),
-    default_state,
-)
-async def choose_office(
-    callback: CallbackQuery,
-    callback_data: MenuCallBack,
-    state: FSMContext,
-) -> None:
-    """
-    Обработка нажатия кнопки выбора офиса для отчета.
-    Переход к следующему состоянию для выбора офиса.
-    """
-    await state.set_state(ReportsStates.choose_office)
-    await callback.message.edit_media(
-        media=await get_img(CHOOSE_OFFICE),
-        reply_markup=await get_btns(
-            menu_name=REPORTS_MENU,
-            previous_menu=REPORTS_MENU,
-            level=2,
-            need_back_btn=True,
-        ),
-    )
-
-
-@user_router.message(ReportsStates.choose_office, F.text.isdigit(), PointExistFilter())
-async def send_report_photo(
-    message: Message, state: FSMContext, model_obj: Points
-) -> None:
-    """
-    Обработка ввода ID офиса для отчета.
-    Переход к следующему состоянию для отправки фото отчета.
-    """
-    point_id = int(message.text)
-    btn_text = (
-        f"Пункт {model_obj.addres} iD{model_obj.id}\n\n" f"Загрузите фото для отчета."
-    )
-    await state.update_data(point_id=point_id)
-    await state.set_state(ReportsStates.send_photo)
-    await message.answer(text=btn_text)
-
-
-@user_router.message(ReportsStates.choose_office, F.text.isdigit(), ~PointExistFilter())
-async def incorrect_office_id_handler(message: Message, state: FSMContext) -> None:
-    """
-    Обработка некорректного ввода ID офиса.
-    Отправка сообщения об ошибке.
-    """
-    await message.answer(text="Пункт отсутствует в бд.")
-
-
-@user_router.message(ReportsStates.choose_office, ~F.text.isdigit())
-async def incorrect_office_id_format_handler(
-    message: Message, state: FSMContext
-) -> None:
-    """
-    Обработка некорректного формата ID офиса.
-    Отправка сообщения об ошибке.
-    """
-    await message.answer(text="ID  офиса должен быть числом.")
-
-
-@user_router.message(ReportsStates.send_photo, F.photo)
-async def send_report_photo_handler(
-    message: Message,
-    state: FSMContext,
-) -> None:
-    """
-    Обработка отправки фото отчета.
-    Сохранение фото и переход к следующему состоянию.
-    """
-    user_data = await state.get_data()
-    point_id = user_data.get("point_id")
-    photo = message.photo[-1]
-    try:
-        # await UsersDAO.save_report_photo(
-        #     user_id=message.from_user.id,
-        #     point_id=point_id,
-        #     photo=photo.file_id
-        # )
-        await message.answer(text="Фото успешно отправлено!")
-        await state.clear()
-    except Exception as error:
-        print(error)
-        await message.answer(text=CRITICAL_ERROR, show_alert=True)
-
-
-@user_router.message(ReportsStates.send_photo, ~F.photo)
-async def incorrect_photo_handler(
-    message: Message,
-    state: FSMContext,
-) -> None:
-    """
-    Обработка некорректного формата фото отчета.
-    Отправка сообщения об ошибке.
-    """
-    await message.answer(text="Отправьте фото для отчета.")

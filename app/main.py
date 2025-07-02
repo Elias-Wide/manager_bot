@@ -9,8 +9,8 @@ from app.admin.adminview import admin_views
 from app.admin.auth import authentication_backend
 from app.bot.init_bot import bot, dp, stop_bot, start_bot
 from app.bot.keyboards.main_kb_builder import set_main_menu
-from app.bot.handlers.admin_handlers import admin_router
-from app.bot.handlers.registration_handlers import registration_router
+from app.bot.handlers.admin import admin_router
+from app.bot.handlers.registration import registration_router
 from app.bot.routers import main_router
 from app.core.config import settings
 from app.core.database import engine

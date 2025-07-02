@@ -3,6 +3,7 @@ from app.core.constants import ADMIN_VIEW_PAGE_SIZE
 from app.points.models import Points
 from app.regions.models import Regions
 from app.users.models import Users
+from app.reports.models import Reports
 
 
 class UsersAdmin(ModelView, model=Users):
@@ -61,8 +62,21 @@ class RegionsAdmin(ModelView, model=Regions):
     icon = "fa fa-map"
 
 
+class ReportsAdmin(ModelView, model=Reports):
+    """Report admin page settings."""
+
+    column_list = [Reports.id]
+    name = "Отчет прихода"
+    name_plural = "Отчеты прихода"
+    can_delete = True
+    column_sortable_list = [Reports.created_at]
+    column_searchable_list = [Reports.point_id]
+    icon = "fa fa-file"
+
+
 admin_views: tuple[ModelView] = (
     UsersAdmin,
     PointsAdmin,
     RegionsAdmin,
+    ReportsAdmin,
 )

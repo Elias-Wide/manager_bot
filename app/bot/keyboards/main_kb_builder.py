@@ -90,7 +90,6 @@ async def get_image_and_kb(
     Aggregate function for creating a keyboard.
     Returns an image with a description and a keyboard for the menu.
     """
-    print("get_img and rb!!!!")
     return (
         await get_img(menu_name=menu_name, caption=caption),
         await get_btns(

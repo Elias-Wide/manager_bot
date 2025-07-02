@@ -23,6 +23,10 @@ class Captions:
         "попробуйте снова."
     )
     incorrect_point_id_format: str = "ID должен быть числом"
+    report_created_today = "❕Отчет для {addres} на сегодня уже отправлен❕"
+    reports_incorrect_photo_format: str = "❌Пожалуйста, отправьте фото для отчета.❌"
+    reports_success: str = "✅Отчет успешно отправлен✅"
+    send_photo: str = "Пункт {addres} iD {point_id}\n\n" "Загрузите фото для отчета."
 
     def __getattr__(self, name):
         """

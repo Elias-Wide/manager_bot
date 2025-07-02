@@ -30,6 +30,7 @@ CALENDAR_BTNS: tuple[tuple[str]] = tuple(
 )
 MAIN_MENU_COMMANDS: dict[str] = {
     "/start": "Перезапуск бота/открыть меню",
+    "/get_work": "Отчет прихода на свой пункт",
 }
 
 MAIN_MENU_BUTTONS: tuple[tuple[str]] = (

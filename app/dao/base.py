@@ -4,6 +4,8 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import and_, insert, select
 from sqlalchemy.exc import SQLAlchemyError
+from asyncache import cached
+from cachetools import TTLCache
 
 from app.core.database import Base, async_session_maker
 
@@ -11,6 +13,8 @@ from app.core.database import Base, async_session_maker
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+
+_get_by_attribute_cache = TTLCache(maxsize=256, ttl=120)
 
 
 class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -76,6 +80,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 return object.mappings().first()
             except (SQLAlchemyError, Exception) as error:
                 await session.rollback()
+                print(error)
                 if isinstance(error, SQLAlchemyError):
                     message = "Database Exception"
                 elif isinstance(error, Exception):

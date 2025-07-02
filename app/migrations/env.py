@@ -12,6 +12,7 @@ from app.core.database import Base  # noqa
 from app.users.models import Users, WorkDays  # noqa
 from app.points.models import Points  # noqa
 from app.regions.models import Regions  # noqa
+from app.reports.models import Reports  # noqa
 
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
