@@ -1,5 +1,5 @@
-import datetime
-from sqlalchemy import select
+from datetime import datetime
+from sqlalchemy import and_, select
 from asyncache import cached
 from cachetools import TTLCache
 
@@ -50,6 +50,25 @@ class UsersDAO(BaseDAO):
         return await BaseDAO.get_by_attribute(
             attr_name="telegram_id", attr_value=telegram_id
         )
+
+    @classmethod
+    async def get_workday_manager(cls, point_id: int) -> Users | None:
+        async with async_session_maker() as session:
+            today = datetime.now().date()
+            print(today)
+            stmt = (
+                select(Users.__table__.columns, Points.__table__.columns, WorkDays.day)
+                .join(WorkDays, WorkDays.user_id == Users.id)
+                .join(Points, Points.id == Users.point_id)
+                .where(
+                    and_(
+                        Users.point_id == point_id,
+                        WorkDays.day == datetime.now().date(),
+                    )
+                )
+            )
+            user = await session.execute(stmt)
+            return user.mappings().all()[0]
 
 
 class WorkDaysDAO(BaseDAO):

@@ -13,7 +13,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.bot.keyboards.banners import get_img
 from app.core.constants import DEFAULT_KEYBOARD_SIZE
 
-from app.bot.handlers.callbacks.menucallback import MenuCallBack
+from app.bot.handlers.callbacks.menucallback import MenuCallBack, RegionAdminCallBack
 from app.bot.keyboards.buttons import BACK_BTN, MAIN_MENU, MAIN_MENU_COMMANDS
 from app.core.config import settings
 
@@ -39,14 +39,17 @@ async def get_btns(
     size: int = DEFAULT_KEYBOARD_SIZE,
     btns_data: tuple[str, str] | None = None,
     user_id: int | None = None,
+    region_id: int | None = None,
     previous_menu: str = MAIN_MENU,
     need_back_btn: bool = True,
+    callback_class: MenuCallBack | RegionAdminCallBack = MenuCallBack,
 ) -> list[InlineKeyboardButton]:
     """
     Create a keyboard.
     The button text and callback data are taken from the buttons module constants.
     If btns_data is not provided, only the Back button is created.
     """
+    print(f"{btns_data=}")
     kb_builder = InlineKeyboardBuilder()
     btns = []
     if btns_data:
@@ -54,9 +57,11 @@ async def get_btns(
             btns.append(
                 InlineKeyboardButton(
                     text=text,
-                    callback_data=MenuCallBack(
+                    callback_data=callback_class(
                         level=level + 1,
                         menu_name=menu_name,
+                        user_id=user_id,
+                        region_id=region_id,
                     ).pack(),
                 ),
             )
@@ -64,8 +69,9 @@ async def get_btns(
         btns.append(
             InlineKeyboardButton(
                 text=BACK_BTN,
-                callback_data=MenuCallBack(
+                callback_data=callback_class(
                     user_id=user_id,
+                    region_id=region_id,
                     level=level,
                     menu_name=previous_menu,
                 ).pack(),
@@ -82,9 +88,11 @@ async def get_image_and_kb(
     btns_data: tuple[str, str] | None = None,
     level: int = 0,
     previous_menu: str = MAIN_MENU,
+    region_id: int | None = None,
     size: tuple[int] = DEFAULT_KEYBOARD_SIZE,
     need_back_btn: bool = True,
     caption: str | None = None,
+    callback_class: MenuCallBack | RegionAdminCallBack = MenuCallBack,
 ) -> tuple[InputMediaPhoto, InlineKeyboardMarkup]:
     """
     Aggregate function for creating a keyboard.
@@ -98,8 +106,10 @@ async def get_image_and_kb(
             level=level,
             size=size,
             btns_data=btns_data,
+            region_id=region_id,
             user_id=user_id,
             previous_menu=previous_menu,
             need_back_btn=need_back_btn,
+            callback_class=callback_class,
         ),
     )

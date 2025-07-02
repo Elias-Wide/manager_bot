@@ -4,6 +4,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from app.core.config import settings
+from app.points.dao import PointsDAO
 
 bot = Bot(
     token=settings.telegram.bot_token.get_secret_value(),
@@ -18,6 +19,7 @@ async def start_bot():
 
     This function notifies the admin that the bot has been successfully launched.
     """
+    await PointsDAO.ensure_default_point()
     try:
         await bot.send_message(settings.telegram.admin_id, "I am running 🥳.")
     except:

@@ -107,6 +107,14 @@ class BanFilter(UserExistFilter):
         return user
 
 
+class RegionAdminFilter(UserExistFilter):
+
+    async def __call__(self, message: Message):
+        is_registered_user = await super().__call__(message)
+        if is_registered_user:
+            return is_registered_user["model_obj"].is_region_admin
+
+
 class AdminFilter(BaseFilter):
     """
     Filter class to check if the user has admin rights.
@@ -188,4 +196,6 @@ class ValidatePhotoFilter(BaseFilter):
         img_in_buffer = await download_file_from_bot(message)
         img_name: str = await generate_filename()
         file_path = os.path.join(REPORTS_DIR, img_name + FMT_JPG)
+        with open(file_path, "wb") as f:
+            f.write(img_in_buffer.getbuffer())
         return {"img_name": img_name}

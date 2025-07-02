@@ -33,3 +33,23 @@ class PointsDAO(BaseDAO):
                 .order_by("point_id")
             )
             return get_objs.mappings().all()
+
+    @classmethod
+    async def ensure_default_point(cls):
+        """
+        Ensure that a Points object with id=1, region_id=None, addres="БЕЗ ПУНКТА" exists in the database.
+        If not, create it.
+        """
+        async with async_session_maker() as session:
+            result = await session.execute(
+                select(Points).where(
+                    Points.id == 1,
+                    Points.region_id == None,
+                    Points.addres == "БЕЗ ПУНКТА",
+                )
+            )
+            point = result.scalars().first()
+            if not point:
+                stmt = insert(Points).values(id=1, region_id=None, addres="БЕЗ ПУНКТА")
+                await session.execute(stmt)
+                await session.commit()

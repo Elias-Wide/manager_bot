@@ -21,6 +21,7 @@ from app.bot.states import ReportsStates
 from app.points.models import Points
 from app.reports.dao import ReportsDAO
 from app.users.dao import UsersDAO
+from app.users.models import Users
 
 reports_router = Router()
 
@@ -66,18 +67,7 @@ async def get_work_handler(
     Handles the /get_work command.
     Prompts the user to select an office for the report.
     """
-    user = await UsersDAO.get_by_attribute(
-        attr_name="telegram_id",
-        attr_value=message.from_user.id,
-    )
-    user_data = await UsersDAO.get_user_full_data(user_id=user.id)
-    await state.set_state(ReportsStates.send_photo)
-    await state.update_data(point_id=user_data["point_id"], addres=user_data["addres"])
-    await message.answer(
-        text=captions.send_photo.format(
-            addres=user_data["addres"], point_id=user_data["point_id"]
-        ),
-    )
+    await office_report_mixin(callback=message, state=state)
 
 
 @reports_router.callback_query(
@@ -93,15 +83,26 @@ async def my_office_report_handler(
     callback_data: MenuCallBack,
     state: FSMContext,
 ) -> None:
-    print(f"{callback_data=}")
-    user = await UsersDAO.get_by_attribute(
+    await office_report_mixin(callback, state, callback_data)
+
+
+async def office_report_mixin(
+    callback: Message | CallbackQuery,
+    state: FSMContext,
+    callback_data: MenuCallBack | None = None,
+) -> None:
+    user: Users = await UsersDAO.get_by_attribute(
         attr_name="telegram_id",
         attr_value=callback.from_user.id,
     )
     user_data = await UsersDAO.get_user_full_data(user_id=user.id)
-    await state.update_data(point_id=user_data["point_id"], addres=user_data["addres"])
+    await state.update_data(
+        point_id=user_data["point_id"], addres=user_data["addres"], user_id=user.id
+    )
     await state.set_state(ReportsStates.send_photo)
-    await callback.message.answer(
+    if callback_data:
+        callback = callback.message
+    await callback.answer(
         text=captions.send_photo.format(
             addres=user_data["addres"], point_id=user_data["point_id"]
         )
@@ -163,6 +164,14 @@ async def send_report_photo_handler(
     try:
         await ReportsDAO.create(
             {
+                "user_id": state_data.get(
+                    "user_id",
+                    (
+                        await UsersDAO.get_by_attribute(
+                            attr_name="telegram_id", attr_value=message.from_user.id
+                        )
+                    ).id,
+                ),
                 "created_at": datetime.now(),
                 "point_id": state_data["point_id"],
                 "img": img_name,

@@ -17,11 +17,18 @@ class ReportsDAO(BaseDAO):
     model = Reports
 
     @classmethod
-    async def get_reports_by_region(region_id: int) -> list[Reports] | None:
+    async def get_reports_by_region(cls, region_id: int) -> list[Reports] | None:
         async with async_session_maker() as session:
             reports = await session.execute(
-                select(Reports.__table__.columns, Points.__table__.columns)
+                select(
+                    Reports.__table__.columns,
+                    Points.__table__.columns,
+                    Users.first_name,
+                    Users.last_name,
+                    Users.username,
+                )
                 .join(Reports, Points.id == Reports.point_id, isouter=True)
+                .join(Users, Users.id == Reports.user_id)
                 .where(
                     and_(
                         func.date(Reports.created_at) == datetime.now().date(),
@@ -29,4 +36,4 @@ class ReportsDAO(BaseDAO):
                     )
                 )
             )
-            return reports.scalars().all() if reports else None
+            return reports.mappings().all() if reports else None
