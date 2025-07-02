@@ -6,24 +6,29 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 
+from app.bot.filters import PointExistFilter
 from app.bot.handlers.callbacks.main_menu import (
     get_menu,
     procces_main_menu_comand,
 )
 from app.bot.keyboards.banners import get_img
 from app.bot.keyboards.buttons import (
+    CHOOSE_OFFICE,
     CONFIRM_SCHEDULE,
     CRITICAL_ERROR,
     EMPTY_BTN,
     MAIN_MENU_PAGES,
     NONE_MENU,
+    OTHER_OFFICE_REPORT,
     PROFILE_MENU,
+    REPORTS_MENU,
     SCHEDULE,
 )
 from app.bot.keyboards.calendar_kb import get_days_btns
-from app.bot.keyboards.main_kb_builder import MenuCallBack
-from app.bot.states import ProfileStates
+from app.bot.keyboards.main_kb_builder import MenuCallBack, get_btns
+from app.bot.states import ProfileStates, ReportsStates
 from app.core.constants import DATE_FORMAT
+from app.points.models import Points
 from app.users.dao import UsersDAO, WorkDaysDAO
 from app.users.models import Users
 
@@ -36,7 +41,9 @@ async def process_start_command(
     message: Message,
     state: FSMContext,
 ) -> None:
-    """После завершения анкетирования. Начало самого бота."""
+    """
+    After completing the registration. Starts the main bot functionality.
+    """
     await procces_main_menu_comand(message)
     await state.clear()
 
@@ -45,7 +52,9 @@ async def process_start_command(
 async def user_menu(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    """Обработка нажатия кнопок меню."""
+    """
+    Handles menu button clicks.
+    """
     await state.clear()
     try:
         await get_menu(callback, callback_data)
@@ -53,7 +62,7 @@ async def user_menu(
     except Exception as error:
         print(error)
         await callback.answer(
-            text="Критическая ошибка / перезапустите бота", show_alert=True
+            text="Critical error / please restart the bot", show_alert=True
         )
 
 
@@ -68,6 +77,9 @@ async def user_menu(
 async def set_user_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
+    """
+    Handles the schedule menu and displays the user's current workdays.
+    """
     try:
         user: Users = await UsersDAO.get_by_attribute(
             attr_name="telegram_id", attr_value=callback.from_user.id
@@ -101,7 +113,9 @@ async def set_user_schedule(
 async def procce_set_schedule(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ):
-    """Обработка нажатий кнопок календаря."""
+    """
+    Handles calendar button clicks for setting the user's schedule.
+    """
     user = await UsersDAO.get_by_attribute(
         attr_name="telegram_id", attr_value=callback.from_user.id
     )
@@ -116,7 +130,7 @@ async def procce_set_schedule(
                 user_id=user.id, work_days=user_schedule
             )
             await state.clear()
-            await callback.answer(text="График успешно сохранен.")
+            await callback.answer(text="Schedule saved successfully.")
             callback_data.level, callback_data.menu_name = 1, PROFILE_MENU
             await get_menu(callback, callback_data)
         except Exception as error:
@@ -156,6 +170,8 @@ async def procce_set_schedule(
 async def proccess_empty_btn(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    """Обработка нажатий пустых кнопок с днями недели в календаре."""
+    """
+    Handles clicks on empty calendar buttons (days of the week).
+    """
     await callback.answer(text=EMPTY_BTN)
     await procce_set_schedule(callback, callback_data, state)

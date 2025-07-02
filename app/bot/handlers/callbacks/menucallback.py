@@ -15,4 +15,10 @@ class MenuCallBack(CallbackData, prefix="menu"):
     level: int = 0
     user_id: int | None = None
     day: str | None = None
+    region_id: int | None = None
     menu_name: str
+
+
+class RegionAdminCallBack(MenuCallBack, prefix="wb_admin"):
+
+    region_id: int

@@ -1,10 +1,15 @@
-import datetime
-from sqlalchemy import select
+from datetime import datetime
+from sqlalchemy import and_, select
+from asyncache import cached
+from cachetools import TTLCache
 
 from app.core.database import async_session_maker
 from app.dao.base import BaseDAO
 from app.points.models import Points
 from app.users.models import Users, WorkDays
+
+# Cache for get_user_full_data: 128 keys, 600 seconds TTL
+user_cache = TTLCache(maxsize=128, ttl=150)
 
 
 class UsersDAO(BaseDAO):
@@ -17,11 +22,11 @@ class UsersDAO(BaseDAO):
     model = Users
 
     @classmethod
+    @cached(user_cache)
     async def get_user_full_data(cls, user_id: int):
         """
-        Запрос в базу данных для получения полной информации.
-        Возвращает данные о пользователе по телеграм id,
-        включаюя данные рабочего офиса пользователя.
+        Query the database to get full user information.
+        Returns user data by telegram id, including office data.
         """
         async with async_session_maker() as session:
             user = await session.execute(
@@ -34,6 +39,35 @@ class UsersDAO(BaseDAO):
                 .where(Users.id == user_id)
             )
         if user:
+            return user.mappings().all()[0]
+
+    @classmethod
+    @cached(user_cache)
+    async def get_by_tg_id(cls, telegram_id: int) -> Users | None:
+        """
+        Get a user by their Telegram ID.
+        """
+        return await BaseDAO.get_by_attribute(
+            attr_name="telegram_id", attr_value=telegram_id
+        )
+
+    @classmethod
+    async def get_workday_manager(cls, point_id: int) -> Users | None:
+        async with async_session_maker() as session:
+            today = datetime.now().date()
+            print(today)
+            stmt = (
+                select(Users.__table__.columns, Points.__table__.columns, WorkDays.day)
+                .join(WorkDays, WorkDays.user_id == Users.id)
+                .join(Points, Points.id == Users.point_id)
+                .where(
+                    and_(
+                        Users.point_id == point_id,
+                        WorkDays.day == datetime.now().date(),
+                    )
+                )
+            )
+            user = await session.execute(stmt)
             return user.mappings().all()[0]
 
 

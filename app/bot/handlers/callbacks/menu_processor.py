@@ -5,6 +5,8 @@ from app.bot.keyboards.buttons import (
     MAIN_MENU_BUTTONS,
     PROFILE_MENU,
     PROFILE_MENU_BTNS,
+    REPORTS_MENU,
+    REPORTS_MENU_BTNS,
 )
 from app.bot.keyboards.captions import get_user_full_data
 from app.bot.keyboards.main_kb_builder import get_image_and_kb
@@ -44,4 +46,11 @@ async def get_menu_content(
             need_back_btn=True,
             btns_data=PROFILE_MENU_BTNS,
             caption=await get_user_full_data(user_id=user_id),
+        )
+    elif menu_name == REPORTS_MENU:
+        return await get_image_and_kb(
+            menu_name=menu_name,
+            user_id=user_id,
+            need_back_btn=True,
+            btns_data=REPORTS_MENU_BTNS,
         )

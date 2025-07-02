@@ -1,9 +1,12 @@
 """Filters for handling user-related checks in the bot."""
 
+import os
 from aiogram.filters import BaseFilter
 from aiogram.types import Message
 
-from app.core.config import settings
+from app.bot.utils import download_file_from_bot, generate_filename
+from app.core.config import REPORTS_DIR, settings
+from app.core.constants import FMT_JPG
 from app.points.dao import PointsDAO
 from app.users.dao import UsersDAO
 
@@ -104,6 +107,14 @@ class BanFilter(UserExistFilter):
         return user
 
 
+class RegionAdminFilter(UserExistFilter):
+
+    async def __call__(self, message: Message):
+        is_registered_user = await super().__call__(message)
+        if is_registered_user:
+            return is_registered_user["model_obj"].is_region_admin
+
+
 class AdminFilter(BaseFilter):
     """
     Filter class to check if the user has admin rights.
@@ -177,3 +188,14 @@ class PointExistFilter(ObjectExistFilter):
         """
         attr_value = int(message.text)
         return await super().__call__(self.attr_name, attr_value)
+
+
+class ValidatePhotoFilter(BaseFilter):
+
+    async def __call__(self, message: Message):
+        img_in_buffer = await download_file_from_bot(message)
+        img_name: str = await generate_filename()
+        file_path = os.path.join(REPORTS_DIR, img_name + FMT_JPG)
+        with open(file_path, "wb") as f:
+            f.write(img_in_buffer.getbuffer())
+        return {"img_name": img_name}
