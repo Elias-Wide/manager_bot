@@ -37,3 +37,11 @@ class ReportsDAO(BaseDAO):
                 )
             )
             return reports.mappings().all() if reports else None
+
+    @classmethod
+    async def get_today_point_report(
+        cls,
+        point_id: int,
+    ) -> Reports | None:
+        async with async_session_maker() as session:
+            stmt = select(Reports.__table__.columns).where(Reports.point_id == point_id)

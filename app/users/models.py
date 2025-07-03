@@ -21,8 +21,10 @@ class Users(Base):
     phone_number = Column(String, nullable=False, unique=True)
     username = Column(String, nullable=False)
     is_region_admin = Column(BOOLEAN, default=False)
+    region_id = Column(ForeignKey("regions.id", ondelete="SET NULL"), nullable=True)
     ban = Column(BOOLEAN, default=False)
     point_id = Column(ForeignKey("points.id"), nullable=False)
+    region = relationship("Regions", back_populates="users", foreign_keys=[region_id])
     points = relationship(
         "Points",
         back_populates="managers",

@@ -12,10 +12,8 @@ from app.users.dao import UsersDAO
 async def get_all_reports(
     callback: CallbackQuery,
     callback_data: RegionAdminCallBack,
-):
-    print(f"{callback_data.region_id=}")
+) -> None:
     reports = await ReportsDAO.get_reports_by_region(region_id=callback_data.region_id)
-    print(reports)
     if reports:
         for report in reports:
             await callback.message.answer_photo(
@@ -25,3 +23,5 @@ async def get_all_reports(
                 ),
                 caption=await captions.get_office_report_caption(report),
             )
+    else:
+        await callback.message.answer(text=captions.no_reports_today)

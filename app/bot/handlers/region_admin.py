@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
+from app.bot.filters import RegionPointFilter
 from app.bot.handlers.callbacks.menucallback import RegionAdminCallBack
 from app.bot.handlers.callbacks.region_admin_menu import get_all_reports
 from app.bot.keyboards.banners import get_file
@@ -16,7 +17,11 @@ from app.bot.keyboards.buttons import (
 )
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.main_kb_builder import get_btns
+from app.bot.states import ReportsStates
+from app.points.models import Points
 from app.regions.dao import RegionsDAO
+from app.reports.dao import ReportsDAO
+from app.reports.models import Reports
 from app.users.dao import UsersDAO
 from app.users.models import Users
 
@@ -52,16 +57,39 @@ async def region_admin_menu(
 
 
 @region_admin_router.callback_query(
-    RegionAdminCallBack.filter(F.menu_name.in_(WB_ADMIN_MENU_PAGES))
+    RegionAdminCallBack.filter(F.menu_name.in_(WB_ADMIN_MENU_PAGES)), default_state
 )
 async def get_region_admin_menu(
-    callback: CallbackQuery,
-    callback_data: RegionAdminCallBack,
+    callback: CallbackQuery, callback_data: RegionAdminCallBack, state: FSMContext
 ):
-    print(f"{callback_data=}")
     if callback_data.menu_name == ALL_PHOTOS:
         await get_all_reports(callback, callback_data)
-    elif callback_data.menu_nmae == GET_OFFICE_REPORT:
-        pass
+    elif callback_data.menu_name == GET_OFFICE_REPORT:
+        await state.set_state(ReportsStates.choose_report_office)
+        await callback.message.answer(text=captions.choose_office)
     elif callback_data.menu_name == GET_DAY_REPORT:
         pass
+
+
+@region_admin_router.message(
+    ReportsStates.choose_report_office, F.text.regexp(r"^\d+$"), RegionPointFilter()
+)
+async def choose_report_office(message: Message, state: FSMContext, point: Points):
+    # report: Reports = await ReportsDAO.get_by_attribute("point_id")
+    await message.answer("Лови")
+
+
+@region_admin_router.message(
+    ReportsStates.choose_report_office, ~F.text.regexp(r"^\d+$")
+)
+async def incorrect_report_office_id_format_handler(
+    message: Message, state: FSMContext
+):
+    await message.answer(captions.incorrect_point_id_format)
+
+
+@region_admin_router.message(
+    ReportsStates.choose_report_office, F.text.regexp(r"^\d+$"), ~RegionPointFilter()
+)
+async def incorrect_report_office_id_handler(message: Message, state: FSMContext):
+    await message.answer(captions.point_not_in_region)

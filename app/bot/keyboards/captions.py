@@ -5,7 +5,7 @@ from app.users.models import Users
 
 class Captions:
     no_caption: str = ""
-    choose_office: str = "Введите id пункта. Если нет постоянного - введите 1"
+    choose_office: str = "Введите id пункта."
     bot_first_message: str = (
         "Привет! Я бот для менеджеров ВБ. Чтобы начать, мне нужно немного "
         "информации о тебе."
@@ -19,12 +19,14 @@ class Captions:
     incorrect_phone_number: str = "Неверный формат номера."
     phone_number_question: str = "Укажите ваш номер телефона в формате +7XXXXXXXXXX."
     point_id_question: str = "Укажите ID пункта, в котором вы работаете."
+    point_not_in_region: str = "Пункт не относится к Вашему региону."
     incorrect_point_id: str = (
         "Пункт с таким ID не найден. Пожалуйста, проверьте введенный ID и "
         "попробуйте снова."
     )
+    no_reports_today: str = "На сегодня отчетов нет."
     incorrect_point_id_format: str = "ID должен быть числом"
-    report_created_today = "❕Отчет для {addres} на сегодня уже отправлен❕"
+    report_created_today: str = "❕Отчет для {addres} на сегодня уже отправлен❕"
     reports_incorrect_photo_format: str = "❌Пожалуйста, отправьте фото для отчета.❌"
     reports_success: str = "✅Отчет успешно отправлен✅"
     send_photo: str = "Пункт {addres} iD {point_id}\n\n" "Загрузите фото для отчета."
