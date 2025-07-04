@@ -27,3 +27,9 @@ class Points(Base):
 
     def __str__(self):
         return f"{self.addres}"
+
+    def get_full_info(self):
+        return (
+            f"Офис 📌{self.addres} id {self.id}\n"
+            f"Режим работы {self.working_schedule}\n\n"
+        )

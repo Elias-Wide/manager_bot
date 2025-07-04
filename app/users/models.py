@@ -43,7 +43,16 @@ class Users(Base):
     )
 
     def __str__(self):
-        return f"User @{self.username}"
+        return f"{self.first_name} {self.last_name} (@{self.username})"
+
+    def get_full_info(self):
+        """
+        Returns a detailed string with user information.
+        """
+        return (
+            f"👤 {self.first_name} {self.last_name} (@{self.username})\n"
+            f"Телефон: +7{self.phone_number}\n"
+        )
 
 
 class WorkDays(Base):

@@ -97,7 +97,9 @@ async def office_report_mixin(
     )
     user_data = await UsersDAO.get_user_full_data(user_id=user.id)
     await state.update_data(
-        point_id=user_data["point_id"], addres=user_data["addres"], user_id=user.id
+        point_id=user_data["point_id"],
+        addres=user_data["addres"],
+        user_id=user.id,
     )
     await state.set_state(ReportsStates.send_photo)
     if callback_data:
@@ -166,7 +168,8 @@ async def send_report_photo_handler(
                     "user_id",
                     (
                         await UsersDAO.get_by_attribute(
-                            attr_name="telegram_id", attr_value=message.from_user.id
+                            attr_name="telegram_id",
+                            attr_value=message.from_user.id,
                         )
                     ).id,
                 ),

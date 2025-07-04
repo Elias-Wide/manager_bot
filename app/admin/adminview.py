@@ -65,7 +65,7 @@ class RegionsAdmin(ModelView, model=Regions):
 class ReportsAdmin(ModelView, model=Reports):
     """Report admin page settings."""
 
-    column_list = [Reports.id]
+    column_list = [Reports.id, Reports.point_id, Reports.created_at]
     name = "Отчет прихода"
     name_plural = "Отчеты прихода"
     can_delete = True

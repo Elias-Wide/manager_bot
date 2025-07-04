@@ -144,6 +144,26 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 return None
 
     @classmethod
+    async def get_objs_by_filter(cls, **filters) -> list[ModelType] | None:
+        """
+        Retrieve a list of objects by arbitrary filters using filter_by.
+
+        Args:
+            **filters: Arbitrary keyword arguments for filtering.
+
+        Returns:
+            list[ModelType] | None: The list of retrieved objects or None if not found.
+        """
+        async with async_session_maker() as session:
+            try:
+                db_objs = await session.execute(select(cls.model).filter_by(**filters))
+                result = db_objs.scalars().all()
+                return result if result else []
+            except Exception as error:
+                print(f"Error in get_list_by_filter: {error}")
+                return None
+
+    @classmethod
     async def get_by_attribute(
         cls,
         attr_name: str,

@@ -13,7 +13,10 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.bot.keyboards.banners import get_img
 from app.core.constants import DEFAULT_KEYBOARD_SIZE
 
-from app.bot.handlers.callbacks.menucallback import MenuCallBack, RegionAdminCallBack
+from app.bot.handlers.callbacks.menucallback import (
+    MenuCallBack,
+    RegionAdminCallBack,
+)
 from app.bot.keyboards.buttons import BACK_BTN, MAIN_MENU, MAIN_MENU_COMMANDS
 from app.core.config import settings
 
