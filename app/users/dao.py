@@ -10,6 +10,7 @@ from app.users.models import Users, WorkDays
 
 # Cache for get_user_full_data: 128 keys, 600 seconds TTL
 user_cache = TTLCache(maxsize=128, ttl=150)
+workday_manager_cache = TTLCache(maxsize=128, ttl=300)
 
 
 class UsersDAO(BaseDAO):
@@ -52,12 +53,16 @@ class UsersDAO(BaseDAO):
         )
 
     @classmethod
-    async def get_workday_manager(cls, point_id: int) -> Users | None:
+    @cached(workday_manager_cache)
+    async def get_workday_manager(cls, point_id: int) -> list[Users] | None:
         async with async_session_maker() as session:
             today = datetime.now().date()
-            print(today)
             stmt = (
-                select(Users.__table__.columns, Points.__table__.columns, WorkDays.day)
+                select(
+                    Users,
+                    Points.__table__.columns,
+                    WorkDays.day,
+                )
                 .join(WorkDays, WorkDays.user_id == Users.id)
                 .join(Points, Points.id == Users.point_id)
                 .where(
@@ -67,8 +72,9 @@ class UsersDAO(BaseDAO):
                     )
                 )
             )
-            user = await session.execute(stmt)
-            return user.mappings().all()[0]
+            managers = await session.execute(stmt)
+            managers = managers.scalars().all()
+            return managers if managers else []
 
 
 class WorkDaysDAO(BaseDAO):

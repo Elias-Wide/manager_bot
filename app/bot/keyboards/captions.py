@@ -1,3 +1,4 @@
+from app.points.models import Points
 from app.reports.models import Reports
 from app.users.dao import UsersDAO
 from app.users.models import Users
@@ -5,7 +6,7 @@ from app.users.models import Users
 
 class Captions:
     no_caption: str = ""
-    choose_office: str = "Введите id пункта. Если нет постоянного - введите 1"
+    choose_office: str = "Введите id пункта."
     bot_first_message: str = (
         "Привет! Я бот для менеджеров ВБ. Чтобы начать, мне нужно немного "
         "информации о тебе."
@@ -19,12 +20,14 @@ class Captions:
     incorrect_phone_number: str = "Неверный формат номера."
     phone_number_question: str = "Укажите ваш номер телефона в формате +7XXXXXXXXXX."
     point_id_question: str = "Укажите ID пункта, в котором вы работаете."
+    office_not_in_region: str = "Пункт не относится к Вашему региону."
     incorrect_point_id: str = (
         "Пункт с таким ID не найден. Пожалуйста, проверьте введенный ID и "
         "попробуйте снова."
     )
+    no_reports_today: str = "На сегодня отчетов нет."
     incorrect_point_id_format: str = "ID должен быть числом"
-    report_created_today = "❕Отчет для {addres} на сегодня уже отправлен❕"
+    report_created_today: str = "❕Отчет для {addres} на сегодня уже отправлен❕"
     reports_incorrect_photo_format: str = "❌Пожалуйста, отправьте фото для отчета.❌"
     reports_success: str = "✅Отчет успешно отправлен✅"
     send_photo: str = "Пункт {addres} iD {point_id}\n\n" "Загрузите фото для отчета."
@@ -42,14 +45,28 @@ class Captions:
         return self.no_caption
 
     async def get_office_report_caption(self, report: Reports) -> str:
-        workday_data = await UsersDAO.get_workday_manager(5411)
-        print(workday_data)
         return (
             f"{report["addres"]}  iD {report.point_id}\n"
-            f"{report.created_at}\n"
+            f"{report.created_at.strftime("%d.%m.%Y %H:%M")}\n"
             f"Менеджер {report["first_name"]} {report["last_name"]} "
             f" @{report["username"]}\n"
         )
+
+    async def get_office_info(self, point: Points, managers: list[Users]) -> str:
+        result_str: str = point.get_full_info()
+        working_managers_id: Users = tuple(
+            m.id for m in (await UsersDAO.get_workday_manager(point.id))
+        )
+        if managers:
+            for manager in managers:
+                manager_info = manager.get_full_info()
+                result_str += (
+                    "📍НА СМЕНЕ📍\n" + manager_info + "\n\n"
+                    if manager.id in working_managers_id
+                    else manager_info + "\n\n"
+                )
+            return result_str
+        return result_str + "❗️На пункте нет постоянных менеджеров❗️"
 
 
 async def get_user_full_data(user_id: int) -> str:

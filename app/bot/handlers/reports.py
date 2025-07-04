@@ -97,7 +97,9 @@ async def office_report_mixin(
     )
     user_data = await UsersDAO.get_user_full_data(user_id=user.id)
     await state.update_data(
-        point_id=user_data["point_id"], addres=user_data["addres"], user_id=user.id
+        point_id=user_data["point_id"],
+        addres=user_data["addres"],
+        user_id=user.id,
     )
     await state.set_state(ReportsStates.send_photo)
     if callback_data:
@@ -112,18 +114,16 @@ async def office_report_mixin(
 @reports_router.message(
     ReportsStates.choose_office, F.text.isdigit(), PointExistFilter()
 )
-async def send_report_photo(
-    message: Message, state: FSMContext, model_obj: Points
-) -> None:
+async def send_report_photo(message: Message, state: FSMContext, point: Points) -> None:
     """
     Handles input of office ID for the report.
     Proceeds to the next state for sending the report photo.
     """
     point_id = int(message.text)
-    await state.update_data(point_id=point_id, addres=model_obj.addres)
+    await state.update_data(point_id=point_id, addres=point.addres)
     await state.set_state(ReportsStates.send_photo)
     await message.answer(
-        text=captions.send_photo.format(addres=model_obj.addres, point_id=model_obj.id)
+        text=captions.send_photo.format(addres=point.addres, point_id=point.id)
     )
 
 
@@ -168,7 +168,8 @@ async def send_report_photo_handler(
                     "user_id",
                     (
                         await UsersDAO.get_by_attribute(
-                            attr_name="telegram_id", attr_value=message.from_user.id
+                            attr_name="telegram_id",
+                            attr_value=message.from_user.id,
                         )
                     ).id,
                 ),

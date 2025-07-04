@@ -50,4 +50,6 @@ class ReportsStates(StatesGroup):
     """
 
     choose_office = State()
+    choose_report_office = State()
+    office_info = State()
     send_photo = State()

@@ -12,6 +12,7 @@ CONFIRM_SCHEDULE: str = "confirm_schedule"
 CONFIRM_SEND: str = "confirm_send"
 CHOOSE_OFFICE: str = "choose_office"
 GET_DAY_REPORT: str = "day_report"
+GET_OFFICE_MANAGERS: str = "get_office_info"
 GET_OFFICE_REPORT: str = "get_office_report"
 EMPTY_BTN: str = "Это пустые кнопки, не балуйся!"
 NONE_MENU = "none"
@@ -46,11 +47,17 @@ REPORTS_MENU_BTNS: tuple[tuple[str]] = (
     (MY_OFFICE_REPORT, "Мой пункт 📍"),
     (OTHER_OFFICE_REPORT, "На замене"),
 )
-WB_ADMIN_MENU_PAGES: tuple[str] = (ALL_PHOTOS, GET_OFFICE_REPORT, GET_DAY_REPORT)
+WB_ADMIN_MENU_PAGES: tuple[str] = (
+    ALL_PHOTOS,
+    GET_OFFICE_REPORT,
+    GET_DAY_REPORT,
+    GET_OFFICE_MANAGERS,
+)
 WB_ADMIN_MENU_BTNS: tuple[tuple[str]] = (
     (ALL_PHOTOS, "Все отчеты прихода 📸"),
     (GET_OFFICE_REPORT, "Отчет по id пункта 🏢"),
     (GET_DAY_REPORT, "Общий отчет по региону 📝"),
+    (GET_OFFICE_MANAGERS, "Контакты пункта 📱"),
 )
 # IMAGES
 NO_IMAGE: str = "no_image"

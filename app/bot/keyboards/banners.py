@@ -38,4 +38,4 @@ async def get_file(
     """
     if await is_file_in_dir(filename + f_type, file_dir):
         return FSInputFile(file_dir.joinpath(filename + f_type))
-    return FSInputFile(file_dir.joinpath(NO_IMAGE + FMT_JPG))
+    return FSInputFile(BANNERS_DIR.joinpath(NO_IMAGE + FMT_JPG))

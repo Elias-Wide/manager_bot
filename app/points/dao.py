@@ -10,7 +10,7 @@ class PointsDAO(BaseDAO):
     @classmethod
     async def search_by_addres(cls, searching_address: str):
         async with async_session_maker() as session:
-            get_objs = await session.execute(
+            stmt = await session.execute(
                 select(cls.model.__table__.columns)
                 .where(
                     and_(
@@ -22,17 +22,15 @@ class PointsDAO(BaseDAO):
                 )
                 .order_by("addres")
             )
-            return get_objs.mappings().all()
+            return stmt.mappings().all()
 
     @classmethod
     async def get_points_by_region_id(cls, region_id: int):
         async with async_session_maker() as session:
-            get_objs = await session.execute(
-                select(cls.model.__table__.columns)
-                .where(Points.region_id == region_id)
-                .order_by("point_id")
+            stmt = await session.execute(
+                select(cls.model.__table__.columns).where(Points.region_id == region_id)
             )
-            return get_objs.mappings().all()
+            return stmt.mappings().all()
 
     @classmethod
     async def ensure_default_point(cls):

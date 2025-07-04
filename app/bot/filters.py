@@ -8,7 +8,9 @@ from app.bot.utils import download_file_from_bot, generate_filename
 from app.core.config import REPORTS_DIR, settings
 from app.core.constants import FMT_JPG
 from app.points.dao import PointsDAO
+from app.points.models import Points
 from app.users.dao import UsersDAO
+from app.users.models import Users
 
 
 class ObjectExistFilter(BaseFilter):
@@ -47,7 +49,7 @@ class ObjectExistFilter(BaseFilter):
             attr_name=attr_name, attr_value=attr_value
         )
         if obj:
-            return {self.attr_name: attr_value, "model_obj": obj}
+            return {"model_obj": obj}
         return False
 
 
@@ -77,7 +79,9 @@ class UserExistFilter(ObjectExistFilter):
             bool: True if the user exists, otherwise False.
         """
         attr_value = message.from_user.id
-        return await super().__call__(self.attr_name, attr_value)
+        is_user_exist: dict = await super().__call__(self.attr_name, attr_value)
+        if is_user_exist:
+            return {"user": is_user_exist["model_obj"]}
 
 
 class BanFilter(UserExistFilter):
@@ -101,10 +105,10 @@ class BanFilter(UserExistFilter):
         Returns:
             bool: False if the user is banned, otherwise the user object.
         """
-        user = await super().__call__(message)
-        if user and user["model_obj"].ban is True:
+        is_user_exist = await super().__call__(message)
+        if is_user_exist and is_user_exist["user"].ban is True:
             return False
-        return user
+        return is_user_exist
 
 
 class RegionAdminFilter(UserExistFilter):
@@ -112,7 +116,7 @@ class RegionAdminFilter(UserExistFilter):
     async def __call__(self, message: Message):
         is_registered_user = await super().__call__(message)
         if is_registered_user:
-            return is_registered_user["model_obj"].is_region_admin
+            return is_registered_user["user"].is_region_admin
 
 
 class AdminFilter(BaseFilter):
@@ -187,12 +191,59 @@ class PointExistFilter(ObjectExistFilter):
             bool: True if the point exists, otherwise False.
         """
         attr_value = int(message.text)
-        return await super().__call__(self.attr_name, attr_value)
+        is_point_exist = await super().__call__(self.attr_name, attr_value)
+        if is_point_exist:
+            return {"point": is_point_exist["model_obj"]}
+
+
+class RegionPointFilter(PointExistFilter):
+    """
+    Filter class to check if the point belongs to the same region as the user.
+
+    Returns:
+        bool: True if the point's region matches the user's region, otherwise False.
+    """
+
+    async def __call__(self, message):
+        """
+        Check if the point's region matches the user's region.
+
+        Args:
+            message (Message): The incoming message object.
+
+        Returns:
+            bool: True if the regions match, otherwise False.
+        """
+
+        point: dict[str:Points] = await super().__call__(message)
+        if not point:
+            return False
+        user: Users = await UsersDAO.get_by_attribute(
+            attr_name="telegram_id", attr_value=message.from_user.id
+        )
+        return point if point["point"].region_id == user.region_id else False
 
 
 class ValidatePhotoFilter(BaseFilter):
+    """
+    Filter class to validate and save a photo from the message buffer.
+
+    Downloads the photo, saves it to the reports directory, and returns the image name.
+
+    Returns:
+        dict: Dictionary with the saved image name.
+    """
 
     async def __call__(self, message: Message):
+        """
+        Download the photo from the message buffer and save it to the reports directory.
+
+        Args:
+            message (Message): The incoming message object.
+
+        Returns:
+            dict: Dictionary with the saved image name.
+        """
         img_in_buffer = await download_file_from_bot(message)
         img_name: str = await generate_filename()
         file_path = os.path.join(REPORTS_DIR, img_name + FMT_JPG)

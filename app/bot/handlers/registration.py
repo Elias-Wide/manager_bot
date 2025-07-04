@@ -15,6 +15,7 @@ from app.bot.filters import (
 from app.bot.keyboards.registration_kb import create_registration_kb
 from app.bot.keyboards.captions import captions
 from app.bot.states import RegistrationStates
+from app.points.models import Points
 from app.users.dao import UsersDAO
 
 
@@ -125,12 +126,13 @@ async def point_id_question_error(
 async def finish_registration(
     message: Message,
     state: FSMContext,
-    id: int,
+    point: Points,
 ) -> None:
     await state.update_data(
         telegram_id=message.from_user.id,
         username=message.from_user.username,
-        point_id=id,
+        point_id=point.id,
+        region_id=point.region_id,
     )
     user_data = await state.get_data()
     print(user_data)
