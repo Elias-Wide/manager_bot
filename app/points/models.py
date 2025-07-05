@@ -1,12 +1,10 @@
-from typing import List
-from sqlalchemy import Column, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ChoiceType
 
 from app.core.database import Base
-from app.core.config import settings
 from app.points.constants import WORKING_SCHEDULE
-from app.regions.models import Regions
+from app.regions.models import Regions  # noqa
 
 
 class Points(Base):

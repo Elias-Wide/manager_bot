@@ -1,11 +1,11 @@
 services:
   main_bot:
-    image: eliaswide/manager-tg-bot
+    image: eliaswide/manager_tg_bot
     env_file:
       - main.env
     restart: on-failure
     ports:
-      - "5000:5000"
+      - "8000:8000"
     depends_on:
       - postgres_main
 

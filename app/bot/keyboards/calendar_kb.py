@@ -1,38 +1,24 @@
 from calendar import Calendar
+from datetime import date, datetime
 from typing import TypeAlias
 
 from aiogram.types import (
-    BotCommand,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    InputMediaPhoto,
     ReplyKeyboardMarkup,
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.core.constants import (
-    CALENDAR_KEYBOARD_SIZE,
-    DEFAULT_KEYBOARD_SIZE,
-)
+from app.core.constants import CALENDAR_KEYBOARD_SIZE
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
     BACK_BTN,
     CALENDAR_BTNS,
-    CONFIRM_SCHEDULE,
     CONFIRM_SCHEDULE_BTN,
     MONTH,
     PROFILE_MENU,
     SCHEDULE,
 )
-from app.core.config import settings
-
-
-from datetime import date, datetime
-
-from aiogram.types import CallbackQuery
-
-from app.core.constants import DEFAULT_KEYBOARD_SIZE
-
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
 

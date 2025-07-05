@@ -25,12 +25,22 @@ class PointsDAO(BaseDAO):
             return stmt.mappings().all()
 
     @classmethod
-    async def get_points_by_region_id(cls, region_id: int):
+    async def get_points_by_region_id(
+        cls, region_id: int, working_schedule: str | None = None
+    ):
         async with async_session_maker() as session:
-            stmt = await session.execute(
-                select(cls.model.__table__.columns).where(Points.region_id == region_id)
+            stmt = ((Points.region_id == region_id),)
+            if working_schedule:
+                stmt = (
+                    and_(
+                        Points.region_id == region_id,
+                        Points.working_schedule == working_schedule,
+                    ),
+                )
+            points = await session.execute(
+                select(Points.__table__.columns).where(*stmt)
             )
-            return stmt.mappings().all()
+            return points.mappings().all()
 
     @classmethod
     async def ensure_default_point(cls):

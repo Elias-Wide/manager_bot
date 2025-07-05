@@ -30,6 +30,8 @@ class TelegramConfig(ConfigBase):
     admin_username: str
     admin_id: int
     webhook_host: str
+    reports_time_middle: int
+    reports_time_lower: int
 
 
 class DatabaseConfig(ConfigBase):

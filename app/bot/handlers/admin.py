@@ -2,7 +2,6 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ContentType, Message
-from aiogram.fsm.state import default_state
 
 from app.bot.filters import AdminFilter
 from app.bot.states import AdminStates

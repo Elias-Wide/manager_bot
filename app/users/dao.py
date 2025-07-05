@@ -8,7 +8,6 @@ from app.dao.base import BaseDAO
 from app.points.models import Points
 from app.users.models import Users, WorkDays
 
-# Cache for get_user_full_data: 128 keys, 600 seconds TTL
 user_cache = TTLCache(maxsize=128, ttl=150)
 workday_manager_cache = TTLCache(maxsize=128, ttl=300)
 
