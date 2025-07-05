@@ -1,16 +1,12 @@
 from datetime import datetime
 from sqlalchemy import (
-    BOOLEAN,
-    BigInteger,
     Column,
     Date,
     DateTime,
-    Integer,
     ForeignKey,
     String,
     UniqueConstraint,
 )
-from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 

@@ -180,7 +180,7 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
     ws = wb.active
     ws.title = "Отчеты по офисам"
 
-    headers = ["Пункт", "ID", "Менеджер", "Отчет прихода"]
+    headers = ["Пункт", "ID", "Менеджер", "Отчет прихода", "График работы"]
     ws.append(headers)
     header_font = Font(bold=True)
     for col_num, _ in enumerate(headers, 1):
@@ -207,10 +207,9 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
         for col_idx in range(1, len(headers) + 1):
             cell = ws.cell(row=row_idx, column=col_idx)
             cell.fill = fill
-            if col_idx == 3:
-                cell.alignment = Alignment(
-                    wrap_text=True, horizontal="center", vertical="center"
-                )
+            cell.alignment = Alignment(
+                wrap_text=True, horizontal="center", vertical="center"
+            )
         if row_idx < len(region_report_data) + 1:
             for col_idx in range(1, len(headers) + 1):
                 ws.cell(row=row_idx, column=col_idx).border = thin_border
@@ -219,7 +218,7 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
     ws.column_dimensions["B"].width = 10
     ws.column_dimensions["C"].width = 25
     ws.column_dimensions["D"].width = 20
-
+    ws.column_dimensions["D"].width = 25
     buffer = BytesIO()
     wb.save(buffer)
     buffer.seek(0)

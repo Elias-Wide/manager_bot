@@ -2,9 +2,7 @@ from aiogram.types import CallbackQuery, Message
 
 from app.bot.handlers.callbacks.menu_processor import get_menu_content
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
-from app.bot.keyboards.banners import get_img
 from app.bot.keyboards.buttons import CRITICAL_ERROR, MAIN_MENU
-from app.bot.keyboards.captions import captions
 from app.users.dao import UsersDAO
 
 

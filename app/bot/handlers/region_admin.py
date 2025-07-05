@@ -1,10 +1,8 @@
-from datetime import datetime
-from typing import Optional
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import BufferedInputFile, CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message
 
 from app.bot.filters import RegionPointFilter
 from app.bot.handlers.callbacks.menucallback import RegionAdminCallBack
@@ -26,7 +24,6 @@ from app.bot.keyboards.captions import captions
 from app.bot.keyboards.main_kb_builder import get_btns
 from app.bot.states import ReportsStates
 from app.core.config import REPORTS_DIR
-from app.points.dao import PointsDAO
 from app.points.models import Points
 from app.regions.dao import RegionsDAO
 from app.reports.dao import ReportsDAO
@@ -156,4 +153,6 @@ async def deletefdf(message: Message, state: FSMContext):
 
 @region_admin_router.message(Command("send"))
 async def notify(message: Message, state: FSMContext):
-    await notify_region_admins_about_missing_reports()
+    await notify_region_admins_about_missing_reports(
+        working_schedule=None, skeep_true=False
+    )

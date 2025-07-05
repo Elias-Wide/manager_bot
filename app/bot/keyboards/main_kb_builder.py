@@ -18,7 +18,6 @@ from app.bot.handlers.callbacks.menucallback import (
     RegionAdminCallBack,
 )
 from app.bot.keyboards.buttons import BACK_BTN, MAIN_MENU, MAIN_MENU_COMMANDS
-from app.core.config import settings
 
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup

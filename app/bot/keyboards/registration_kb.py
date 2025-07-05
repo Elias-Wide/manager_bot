@@ -1,6 +1,6 @@
 """Клавиатура вступительной анкеты."""
 
-from typing import Iterable, TypeAlias
+from typing import TypeAlias
 
 from aiogram.types import (
     InlineKeyboardButton,

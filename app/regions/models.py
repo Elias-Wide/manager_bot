@@ -4,7 +4,6 @@ from sqlalchemy.orm import relationship
 
 
 from app.core.database import Base
-from app.core.config import settings
 
 from app.users.models import Users  # noqa
 
