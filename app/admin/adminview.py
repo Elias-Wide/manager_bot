@@ -22,6 +22,7 @@ class UsersAdmin(ModelView, model=Users):
     name = "Пользователь"
     name_plural = "Пользователи"
     can_delete = True
+    column_sortable_list = [Users.is_region_admin]
     column_searchable_list = [
         Users.username,
         Users.telegram_id,
@@ -42,7 +43,7 @@ class PointsAdmin(ModelView, model=Points):
     name = "Офис"
     name_plural = "Офисы"
     can_delete = True
-    column_sortable_list = [Points.addres]
+    column_sortable_list = [Points.addres, Points.region_id]
     column_searchable_list = [Points.addres, Points.id]
     icon = "fa fa-house"
 

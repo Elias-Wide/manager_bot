@@ -8,13 +8,14 @@ from app.regions.models import Regions  # noqa
 
 
 class Points(Base):
-    """Модель офиса.
+    """Office_Model.
 
     Args:
-        id: id офиса в системе вб
-        addres: полный адрес
-        trades: созданные модели обмена кодами
-        managers: менеджеры офиса
+        id: office it in wb system
+        addres: current addres of the office
+        region_id: id of the office workin region (disctrict)
+        working_schedule: office working schedule(8-22hrs or 9-21hrs)
+        managers: users that work in that office
     """
 
     addres = Column(String, nullable=False)

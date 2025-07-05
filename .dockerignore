@@ -1,5 +1,7 @@
+.venv
 venv
 .git
 manager_bot.code-workspace
 db.env
 main.env
+__pycache__

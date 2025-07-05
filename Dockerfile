@@ -14,4 +14,6 @@ RUN apt-get update && apt-get install libzbar0 -y
 
 COPY . .
 
+ENTRYPOINT ["bash", "db_migrate.sh"]
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

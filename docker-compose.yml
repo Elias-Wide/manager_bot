@@ -1,4 +1,12 @@
 services:
+  postgres_db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - db.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
   main_bot:
     build:
       context: .
@@ -8,14 +16,6 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - postgres_main
-
-  postgres_main:
-    image: postgres:latest
-    env_file:
-      - db.env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
+      - postgres_db
 volumes:
   postgres_data:

@@ -1,4 +1,6 @@
 import os
+import subprocess
+ 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -19,9 +21,10 @@ async def start_bot():
 
     This function notifies the admin that the bot has been successfully launched.
     """
-    await PointsDAO.ensure_default_point()
     try:
+        # subprocess.run(["alembic", "upgrade", "head"], capture_output=True, text=True)
         await bot.send_message(settings.telegram.admin_id, "I am running 🥳.")
+        await PointsDAO.ensure_default_point()
     except:
         print("MESSAGE NOT SENT")
 
@@ -33,6 +36,7 @@ async def stop_bot():
     This function notifies the admin that the bot has been stopped.
     """
     try:
+        
         await bot.send_message(settings.telegram.admin_id, "The bot has been stopped.")
     except:
         pass
