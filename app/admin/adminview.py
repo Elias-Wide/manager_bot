@@ -1,6 +1,6 @@
 from sqladmin import ModelView
 from app.core.constants import ADMIN_VIEW_PAGE_SIZE
-from app.points.models import Points
+from app.offices.models import Offices
 from app.regions.models import Regions
 from app.users.models import Users
 from app.reports.models import Reports
@@ -14,11 +14,11 @@ class UsersAdmin(ModelView, model=Users):
         Users.id,
         Users.username,
         Users.telegram_id,
-        Users.point_id,
+        Users.office_id,
         Users.phone_number,
         Users.ban,
         Users.is_region_admin,
-    ] + [Users.points]
+    ] + [Users.offices]
     name = "Пользователь"
     name_plural = "Пользователи"
     can_delete = True
@@ -26,25 +26,25 @@ class UsersAdmin(ModelView, model=Users):
     column_searchable_list = [
         Users.username,
         Users.telegram_id,
-        Users.point_id,
+        Users.office_id,
         Users.first_name,
         Users.last_name,
     ]
     icon = "fa-solid fa-user"
 
 
-class PointsAdmin(ModelView, model=Points):
+class OfficesAdmin(ModelView, model=Offices):
     """Настройки страницы офисов."""
 
-    column_list = [c.name for c in Points.__table__.c] + [
-        Points.region,
-        Points.managers,
+    column_list = [c.name for c in Offices.__table__.c] + [
+        Offices.region,
+        Offices.managers,
     ]
     name = "Офис"
     name_plural = "Офисы"
     can_delete = True
-    column_sortable_list = [Points.addres, Points.region_id]
-    column_searchable_list = [Points.addres, Points.id]
+    column_sortable_list = [Offices.addres, Offices.region_id]
+    column_searchable_list = [Offices.addres, Offices.id]
     icon = "fa fa-house"
 
 
@@ -53,7 +53,7 @@ class RegionsAdmin(ModelView, model=Regions):
 
     column_list = [c.name for c in Regions.__table__.c] + [
         Regions.ceo,
-        Regions.points,
+        Regions.offices,
     ]
     name = "Регион"
     name_plural = "Регионы"
@@ -66,18 +66,18 @@ class RegionsAdmin(ModelView, model=Regions):
 class ReportsAdmin(ModelView, model=Reports):
     """Report admin page settings."""
 
-    column_list = [Reports.id, Reports.point_id, Reports.created_at]
+    column_list = [Reports.id, Reports.office_id, Reports.created_at]
     name = "Отчет прихода"
     name_plural = "Отчеты прихода"
     can_delete = True
     column_sortable_list = [Reports.created_at]
-    column_searchable_list = [Reports.point_id]
+    column_searchable_list = [Reports.office_id]
     icon = "fa fa-file"
 
 
 admin_views: tuple[ModelView] = (
     UsersAdmin,
-    PointsAdmin,
+    OfficesAdmin,
     RegionsAdmin,
     ReportsAdmin,
 )

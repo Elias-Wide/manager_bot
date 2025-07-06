@@ -5,7 +5,7 @@ from cachetools import TTLCache
 
 from app.core.database import async_session_maker
 from app.dao.base import BaseDAO
-from app.points.models import Points
+from app.offices.models import Offices
 from app.users.models import Users, WorkDays
 
 user_cache = TTLCache(maxsize=128, ttl=150)
@@ -32,10 +32,10 @@ class UsersDAO(BaseDAO):
             user = await session.execute(
                 select(
                     Users.__table__.columns,
-                    Points.id.label("point_id"),
-                    Points.addres,
+                    Offices.id.label("office_id"),
+                    Offices.addres,
                 )
-                .join(Points, Points.id == Users.point_id, isouter=True)
+                .join(Offices, Offices.id == Users.office_id, isouter=True)
                 .where(Users.id == user_id)
             )
         if user:
@@ -53,20 +53,20 @@ class UsersDAO(BaseDAO):
 
     @classmethod
     @cached(workday_manager_cache)
-    async def get_workday_manager(cls, point_id: int) -> list[Users] | None:
+    async def get_workday_manager(cls, office_id: int) -> list[Users] | None:
         async with async_session_maker() as session:
             today = datetime.now().date()
             stmt = (
                 select(
                     Users,
-                    Points.__table__.columns,
+                    Offices.__table__.columns,
                     WorkDays.day,
                 )
                 .join(WorkDays, WorkDays.user_id == Users.id)
-                .join(Points, Points.id == Users.point_id)
+                .join(Offices, Offices.id == Users.office_id)
                 .where(
                     and_(
-                        Users.point_id == point_id,
+                        Users.office_id == office_id,
                         WorkDays.day == datetime.now().date(),
                     )
                 )

@@ -23,7 +23,7 @@ from app.bot.keyboards.calendar_kb import get_days_btns
 from app.bot.keyboards.main_kb_builder import MenuCallBack
 from app.bot.states import ProfileStates
 from app.core.constants import DATE_FORMAT
-from app.points.models import Points
+from app.offices.models import Offices
 from app.users.dao import UsersDAO, WorkDaysDAO
 from app.users.models import Users
 

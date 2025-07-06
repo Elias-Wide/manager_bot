@@ -6,8 +6,8 @@ from app.bot.keyboards.banners import get_file
 from app.bot.keyboards.captions import captions
 from app.bot.utils import create_excel_report
 from app.core.config import REPORTS_DIR
-from app.points.dao import PointsDAO
-from app.points.models import Points
+from app.offices.dao import OfficesDAO
+from app.offices.models import Offices
 from app.reports.dao import ReportsDAO
 from app.reports.models import Reports
 from app.users.dao import UsersDAO
@@ -53,7 +53,7 @@ async def get_reports_info_by_region(
 ) -> list[tuple[str]] | None:
     region_reports_data = []
     reports: dict[int:Reports] = {
-        report.point_id: report
+        report.office_id: report
         for report in (
             await ReportsDAO.get_reports_by_region(
                 region_id=region_id, working_schedule=working_schedule
@@ -61,23 +61,23 @@ async def get_reports_info_by_region(
         )
     }
     print(f"{reports=}")
-    offices_by_region: tuple[Points] = tuple(
+    offices_by_region: tuple[Offices] = tuple(
         sorted(
-            await PointsDAO.get_points_by_region_id(
+            await OfficesDAO.get_Offices_by_region_id(
                 region_id=region_id, working_schedule=working_schedule
             ),
             key=lambda x: x.working_schedule == "middle",
         )
     )
     for office in offices_by_region:
-        office: Points = office
+        office: Offices = office
         if office.id in reports and not skeep_true:
             report = reports[office.id]
             created_at = report["created_at"]
             region_reports_data.append(
                 (
                     report["addres"],
-                    report["point_id"],
+                    report["office_id"],
                     f'{report["first_name"]} {report["last_name"]} (@{report["username"]})',
                     created_at,
                     office.working_schedule.value,

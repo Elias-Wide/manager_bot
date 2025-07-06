@@ -1,11 +1,11 @@
 from sqlalchemy import and_, func, insert, select
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
-from app.points.models import Points
+from app.offices.models import Offices
 
 
-class PointsDAO(BaseDAO):
-    model = Points
+class OfficesDAO(BaseDAO):
+    model = Offices
 
     @classmethod
     async def search_by_addres(cls, searching_address: str):
@@ -14,10 +14,10 @@ class PointsDAO(BaseDAO):
                 select(cls.model.__table__.columns)
                 .where(
                     and_(
-                        func.lower(Points.addres).contains(
+                        func.lower(Offices.addres).contains(
                             searching_address.lower(),
                         ),
-                        Points.id != 1,
+                        Offices.id != 1,
                     )
                 )
                 .order_by("addres")
@@ -25,39 +25,39 @@ class PointsDAO(BaseDAO):
             return stmt.mappings().all()
 
     @classmethod
-    async def get_points_by_region_id(
+    async def get_offices_by_region_id(
         cls, region_id: int, working_schedule: str | None = None
     ):
         async with async_session_maker() as session:
-            stmt = ((Points.region_id == region_id),)
+            stmt = ((Offices.region_id == region_id),)
             if working_schedule:
                 stmt = (
                     and_(
-                        Points.region_id == region_id,
-                        Points.working_schedule == working_schedule,
+                        Offices.region_id == region_id,
+                        Offices.working_schedule == working_schedule,
                     ),
                 )
-            points = await session.execute(
-                select(Points.__table__.columns).where(*stmt)
+            offices = await session.execute(
+                select(Offices.__table__.columns).where(*stmt)
             )
-            return points.mappings().all()
+            return offices.mappings().all()
 
     @classmethod
-    async def ensure_default_point(cls):
+    async def ensure_default_office(cls):
         """
-        Ensure that a Points object with id=1, region_id=None, addres="БЕЗ ПУНКТА" exists in the database.
+        Ensure that a Offices object with id=1, region_id=None, addres="БЕЗ ПУНКТА" exists in the database.
         If not, create it.
         """
         async with async_session_maker() as session:
             result = await session.execute(
-                select(Points).where(
-                    Points.id == 1,
-                    Points.region_id == None,
-                    Points.addres == "БЕЗ ПУНКТА",
+                select(Offices).where(
+                    Offices.id == 1,
+                    Offices.region_id == None,
+                    Offices.addres == "БЕЗ ПУНКТА",
                 )
             )
-            point = result.scalars().first()
-            if not point:
-                stmt = insert(Points).values(id=1, region_id=None, addres="БЕЗ ПУНКТА")
+            office = result.scalars().first()
+            if not office:
+                stmt = insert(Offices).values(id=1, region_id=None, addres="БЕЗ ПУНКТА")
                 await session.execute(stmt)
                 await session.commit()

@@ -35,9 +35,9 @@ async def notify_region_admins_about_missing_reports(
 ):
     """
     For each region:
-    - Get all points with working schedule 'lower' and today's reports.
+    - Get all offices with working schedule 'lower' and today's reports.
     - Find region admins.
-    - For each point without a report, add to result list.
+    - For each office without a report, add to result list.
     - Send the list to each region admin.
     """
     regions = await RegionsDAO.get_multi()

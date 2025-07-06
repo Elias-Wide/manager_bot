@@ -23,10 +23,10 @@ class Users(Base):
     is_region_admin = Column(BOOLEAN, default=False)
     region_id = Column(ForeignKey("regions.id", ondelete="SET NULL"), nullable=True)
     ban = Column(BOOLEAN, default=False)
-    point_id = Column(ForeignKey("points.id"), nullable=False)
+    office_id = Column(ForeignKey("offices.id"), nullable=False)
     region = relationship("Regions", back_populates="users", foreign_keys=[region_id])
-    points = relationship(
-        "Points",
+    offices = relationship(
+        "Offices",
         back_populates="managers",
     )
     work_days = relationship(

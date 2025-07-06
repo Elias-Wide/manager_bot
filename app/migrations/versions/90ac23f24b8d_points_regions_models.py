@@ -10,7 +10,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from app.points.constants import WORKING_SCHEDULE
+from app.offices.constants import WORKING_SCHEDULE
 import sqlalchemy_utils
 
 
@@ -40,7 +40,7 @@ def upgrade() -> None:
         sa.Column(
             "working_schedule",
             sqlalchemy_utils.types.choice.ChoiceType(WORKING_SCHEDULE),
-            nullable=True,
+            nullable=False,
         ),
         sa.Column("name", sa.String(), nullable=True),
         sa.Column("id", sa.Integer(), nullable=False),

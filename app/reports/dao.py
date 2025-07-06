@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy import and_, func, select
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
-from app.points.models import Points
+from app.offices.models import Offices
 from app.reports.models import Reports
 from app.users.models import Users
 
@@ -22,18 +22,18 @@ class ReportsDAO(BaseDAO):
     ) -> list[Reports] | None:
         stmt = and_(
             Reports.created_at_date == datetime.now().date(),
-            Points.region_id == region_id,
+            Offices.region_id == region_id,
         )
         if working_schedule:
             stmt = and_(
                 Reports.created_at_date == datetime.now().date(),
-                Points.region_id == region_id,
-                Points.working_schedule == working_schedule,
+                Offices.region_id == region_id,
+                Offices.working_schedule == working_schedule,
             )
         async with async_session_maker() as session:
             reports = await session.execute(
                 select(*reports_attrs_to_get)
-                .join(Reports, Points.id == Reports.point_id, isouter=True)
+                .join(Reports, Offices.id == Reports.office_id, isouter=True)
                 .join(Users, Users.id == Reports.user_id)
                 .where(stmt)
                 .order_by("created_at")
@@ -41,18 +41,18 @@ class ReportsDAO(BaseDAO):
             return reports.mappings().all() if reports else []
 
     @classmethod
-    async def get_today_point_report(
+    async def get_today_office_report(
         cls,
-        point_id: int,
+        office_id: int,
     ) -> Reports | None:
         async with async_session_maker() as session:
             stmt = (
                 select(*reports_attrs_to_get)
-                .join(Points, Points.id == Reports.point_id)
+                .join(Offices, Offices.id == Reports.office_id)
                 .join(Users, Users.id == Reports.user_id)
                 .where(
                     and_(
-                        Reports.point_id == point_id,
+                        Reports.office_id == office_id,
                         Reports.created_at_date == datetime.now().date(),
                     )
                 )
@@ -63,8 +63,8 @@ class ReportsDAO(BaseDAO):
 
 reports_attrs_to_get = (
     Reports.__table__.columns,
-    Points.id,
-    Points.addres,
+    Offices.id,
+    Offices.addres,
     Users.first_name,
     Users.last_name,
     Users.username,
