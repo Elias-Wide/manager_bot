@@ -17,6 +17,7 @@ class MenuCallBack(CallbackData, prefix="menu"):
     day: str | None = None
     region_id: int | None = None
     menu_name: str
+    month: int | None = None
 
 
 class RegionAdminCallBack(MenuCallBack, prefix="wb_admin"):

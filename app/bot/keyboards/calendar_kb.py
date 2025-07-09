@@ -14,8 +14,10 @@ from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
     BACK_BTN,
     CALENDAR_BTNS,
+    CHANGE_MONTH,
     CONFIRM_SCHEDULE_BTN,
     MONTH,
+    NONE_MENU,
     PROFILE_MENU,
     SCHEDULE,
 )
@@ -28,8 +30,8 @@ async def get_days_btns(
     user_id: int,
     level: int,
     user_schedule: list[date],
-    menu_name: str = SCHEDULE,
     size: int = CALENDAR_KEYBOARD_SIZE,
+    month: int | None = None,
     previous_menu: str = PROFILE_MENU,
 ) -> list[InlineKeyboardButton]:
     """
@@ -39,11 +41,15 @@ async def get_days_btns(
     """
     kb_builder = InlineKeyboardBuilder()
     btns = []
-    now = datetime.now()
-    for month_number in range(now.month - 1, now.month + 2):
+    today = datetime.now()
+    print(f"{user_schedule=}")
+    for month_number in range(month - 1, month + 2):
         text = f"{MONTH[month_number]}".lower()
-        if month_number == now.month:
+        if month == month_number:
             text = text.upper()
+        menu_name = CHANGE_MONTH
+        if month_number < today.month or (month_number == month):
+            menu_name = NONE_MENU
         btns.append(
             InlineKeyboardButton(
                 text=text,
@@ -51,6 +57,7 @@ async def get_days_btns(
                     level=level,
                     menu_name=menu_name,
                     user_id=user_id,
+                    month=month_number,
                 ).pack(),
             ),
         )
@@ -62,12 +69,12 @@ async def get_days_btns(
                 text=text,
                 callback_data=MenuCallBack(
                     level=level,
-                    menu_name=menu_name,
+                    menu_name=menu,
                     user_id=user_id,
                 ).pack(),
             ),
         )
-    for day in await get_current_month_days():
+    for day in await get_month_days(today.year, month):
         text = day.strftime("%d")
         if day in user_schedule:
             text += "📍"
@@ -77,8 +84,9 @@ async def get_days_btns(
                 text=text,
                 callback_data=MenuCallBack(
                     level=level,
-                    menu_name=menu_name,
+                    menu_name=SCHEDULE,
                     user_id=user_id,
+                    month=month,
                     day=day.strftime("%m.%d.%Y"),
                 ).pack(),
             ),
@@ -107,11 +115,9 @@ async def get_days_btns(
     return kb_builder.as_markup()
 
 
-async def get_current_month_days() -> list[date]:
+async def get_month_days(year: int, month: int) -> list[date]:
     """
     Возвращает список дней текущего месяца.
     Дополнительно содержит несколько дней прошлого и след. месяцев
     для генерации полной недели."""
-    now = datetime.now()
-    days = Calendar()
-    return [day for day in Calendar().itermonthdates(now.year, now.month)]
+    return [day for day in Calendar().itermonthdates(year, month)]

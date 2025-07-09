@@ -2,7 +2,7 @@ from sqladmin import ModelView
 from app.core.constants import ADMIN_VIEW_PAGE_SIZE
 from app.offices.models import Offices
 from app.regions.models import Regions
-from app.users.models import Users
+from app.users.models import Users, WorkDays
 from app.reports.models import Reports
 
 
@@ -75,9 +75,20 @@ class ReportsAdmin(ModelView, model=Reports):
     icon = "fa fa-file"
 
 
+class WAdmin(ModelView, model=WorkDays):
+    column_list = [WorkDays.id, WorkDays.day, WorkDays.user]
+    name = "Дни рабочие"
+    name_plural = "График работы"
+    can_delete = True
+    column_sortable_list = [WorkDays.user]
+    column_searchable_list = [WorkDays.user, WorkDays.day]
+    icon = "fa fa-file"
+
+
 admin_views: tuple[ModelView] = (
     UsersAdmin,
     OfficesAdmin,
     RegionsAdmin,
     ReportsAdmin,
+    WAdmin,
 )

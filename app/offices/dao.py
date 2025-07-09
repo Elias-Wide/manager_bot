@@ -1,6 +1,7 @@
 from sqlalchemy import and_, func, insert, select
 from app.dao.base import BaseDAO
 from app.core.database import async_session_maker
+from app.offices.constants import NO_OFFICE_ADDRES, NO_OFFICE_ID
 from app.offices.models import Offices
 
 
@@ -51,13 +52,15 @@ class OfficesDAO(BaseDAO):
         async with async_session_maker() as session:
             result = await session.execute(
                 select(Offices).where(
-                    Offices.id == 1,
+                    Offices.id == NO_OFFICE_ID,
                     Offices.region_id == None,
-                    Offices.addres == "БЕЗ ПУНКТА",
+                    Offices.addres == NO_OFFICE_ADDRES,
                 )
             )
             office = result.scalars().first()
             if not office:
-                stmt = insert(Offices).values(id=1, region_id=None, addres="БЕЗ ПУНКТА")
+                stmt = insert(Offices).values(
+                    id=1, region_id=None, addres=NO_OFFICE_ADDRES
+                )
                 await session.execute(stmt)
                 await session.commit()

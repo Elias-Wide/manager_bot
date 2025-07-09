@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
         allowed_updates=dp.resolve_used_update_types(),
         drop_pending_updates=True,
     )
-    await set_main_menu(bot)
+    # await set_main_menu(bot)
     dp.include_router(main_router)
     dp.include_router(registration_router)
     # dp.include_router(admin_router)

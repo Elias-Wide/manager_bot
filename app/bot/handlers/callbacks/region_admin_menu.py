@@ -4,13 +4,14 @@ from aiogram.types import BufferedInputFile, CallbackQuery
 from app.bot.handlers.callbacks.menucallback import RegionAdminCallBack
 from app.bot.keyboards.banners import get_file
 from app.bot.keyboards.captions import captions
-from app.bot.utils import create_excel_report
+from app.bot.utils import create_excel_report, create_region_schedule
 from app.core.config import REPORTS_DIR
 from app.offices.dao import OfficesDAO
 from app.offices.models import Offices
 from app.reports.dao import ReportsDAO
 from app.reports.models import Reports
-from app.users.dao import UsersDAO
+from app.users.dao import UsersDAO, WorkDaysDAO
+from app.users.models import WorkDays
 
 
 async def get_all_reports(
@@ -46,6 +47,21 @@ async def get_day_reports_by_region(
     )
 
 
+async def get_region_schedule(
+    callback: CallbackQuery,
+    callback_data: RegionAdminCallBack,
+) -> None:
+    excel_buffer = await create_region_schedule(
+        await OfficesDAO.get_offices_by_region_id(callback_data.region_id)
+    )
+    await callback.message.answer_document(
+        document=BufferedInputFile(
+            file=excel_buffer.getvalue(),
+            filename=f"ГРафик{datetime.now().date()}.xlsx",
+        )
+    )
+
+
 async def get_reports_info_by_region(
     region_id: int,
     skeep_true: bool = False,
@@ -63,7 +79,7 @@ async def get_reports_info_by_region(
     print(f"{reports=}")
     offices_by_region: tuple[Offices] = tuple(
         sorted(
-            await OfficesDAO.get_Offices_by_region_id(
+            await OfficesDAO.get_offices_by_region_id(
                 region_id=region_id, working_schedule=working_schedule
             ),
             key=lambda x: x.working_schedule == "middle",

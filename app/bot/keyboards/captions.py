@@ -34,6 +34,7 @@ class Captions:
     reports_incorrect_photo_format: str = "❌Пожалуйста, отправьте фото для отчета.❌"
     reports_success: str = "✅Отчет успешно отправлен✅"
     send_photo: str = "Пункт {addres} iD {office_id}\n\n" "Загрузите фото для отчета."
+    schedule_saved: str = "✅ График успешно сохранен ✅"
 
     def __getattr__(self, name):
         """
