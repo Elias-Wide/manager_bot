@@ -10,7 +10,7 @@ from sqlalchemy import engine_from_config, pool
 from app.core.config import settings  # noqa
 from app.core.database import Base  # noqa
 from app.users.models import Users, WorkDays  # noqa
-from app.points.models import Points  # noqa
+from app.offices.models import Offices  # noqa
 from app.regions.models import Regions  # noqa
 from app.reports.models import Reports  # noqa
 

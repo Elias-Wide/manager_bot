@@ -9,13 +9,13 @@ from aiogram.types import (
 
 from app.bot.filters import (
     NameValidationFilter,
-    PointExistFilter,
+    OfficeExistFilter,
     UserExistFilter,
 )
 from app.bot.keyboards.registration_kb import create_registration_kb
 from app.bot.keyboards.captions import captions
 from app.bot.states import RegistrationStates
-from app.points.models import Points
+from app.offices.models import Offices
 from app.users.dao import UsersDAO
 
 
@@ -84,55 +84,55 @@ async def phone_number_question_error(message: Message) -> None:
     F.content_type == "text",
     F.text.regexp(r"^\+7\d{10}$"),
 )
-async def ask_point_id_question(
+async def ask_office_id_question(
     message: Message,
     state: FSMContext,
 ) -> None:
     await state.update_data(phone_number=message.text.strip()[2:])
-    await message.answer(text=captions.point_id_question)
-    await state.set_state(RegistrationStates.point_id_question)
+    await message.answer(text=captions.office_id_question)
+    await state.set_state(RegistrationStates.office_id_question)
 
 
 @registration_router.message(
-    RegistrationStates.point_id_question,
+    RegistrationStates.office_id_question,
     ~F.text.regexp(r"^\d+$"),
 )
-async def point_id_question_error(
+async def office_id_question_error(
     message: Message,
 ) -> None:
     await message.answer(
-        text=captions.incorrect_point_id_format,
+        text=captions.incorrect_office_id_format,
     )
 
 
 @registration_router.message(
-    RegistrationStates.point_id_question,
+    RegistrationStates.office_id_question,
     F.text.regexp(r"^\d+$"),
-    ~PointExistFilter(),
+    ~OfficeExistFilter(),
 )
-async def point_id_question_error(
+async def office_id_question_error(
     message: Message,
 ) -> None:
     await message.answer(
-        text=captions.incorrect_point_id,
+        text=captions.incorrect_office_id,
     )
 
 
 @registration_router.message(
-    RegistrationStates.point_id_question,
+    RegistrationStates.office_id_question,
     F.text.regexp(r"^\d+$"),
-    PointExistFilter(),
+    OfficeExistFilter(),
 )
 async def finish_registration(
     message: Message,
     state: FSMContext,
-    point: Points,
+    office: Offices,
 ) -> None:
     await state.update_data(
         telegram_id=message.from_user.id,
         username=message.from_user.username,
-        point_id=point.id,
-        region_id=point.region_id,
+        office_id=office.id,
+        region_id=office.region_id,
     )
     user_data = await state.get_data()
     print(user_data)

@@ -15,7 +15,7 @@ async def procces_main_menu_comand(
         )
 
         media, reply_markup = await get_menu_content(
-            level=level, menu_name=menu_name, user_id=user.id
+            level=level, menu_name=menu_name, user=user
         )
         await message.answer_photo(
             photo=media.media,
@@ -28,15 +28,12 @@ async def procces_main_menu_comand(
 
 
 async def get_menu(callback: CallbackQuery, callback_data: MenuCallBack) -> None:
-    if not callback_data.user_id:
-        user = await UsersDAO.get_by_attribute(
-            attr_name="telegram_id", attr_value=callback.message.chat.id
-        )
-        callback_data.user_id = user.id
+    user = await UsersDAO.get_by_attribute(
+        attr_name="telegram_id", attr_value=callback.from_user.id
+    )
+    callback_data.user_id = user.id
     media, reply_markup = await get_menu_content(
-        level=callback_data.level,
-        menu_name=callback_data.menu_name,
-        user_id=callback_data.user_id,
+        level=callback_data.level, menu_name=callback_data.menu_name, user=user
     )
     await callback.message.edit_media(
         media=media,

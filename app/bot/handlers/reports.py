@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.filters import PointExistFilter, ValidatePhotoFilter
+from app.bot.filters import OfficeExistFilter, ValidatePhotoFilter
 from app.bot.handlers.callbacks.menucallback import MenuCallBack
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.banners import get_img
@@ -18,7 +18,7 @@ from app.bot.keyboards.buttons import (
 )
 from app.bot.keyboards.main_kb_builder import get_btns
 from app.bot.states import ReportsStates
-from app.points.models import Points
+from app.offices.models import Offices
 from app.reports.dao import ReportsDAO
 from app.users.dao import UsersDAO
 from app.users.models import Users
@@ -97,7 +97,7 @@ async def office_report_mixin(
     )
     user_data = await UsersDAO.get_user_full_data(user_id=user.id)
     await state.update_data(
-        point_id=user_data["point_id"],
+        office_id=user_data["office_id"],
         addres=user_data["addres"],
         user_id=user.id,
     )
@@ -106,29 +106,31 @@ async def office_report_mixin(
         callback = callback.message
     await callback.answer(
         text=captions.send_photo.format(
-            addres=user_data["addres"], point_id=user_data["point_id"]
+            addres=user_data["addres"], office_id=user_data["office_id"]
         )
     )
 
 
 @reports_router.message(
-    ReportsStates.choose_office, F.text.isdigit(), PointExistFilter()
+    ReportsStates.choose_office, F.text.isdigit(), OfficeExistFilter()
 )
-async def send_report_photo(message: Message, state: FSMContext, point: Points) -> None:
+async def send_report_photo(
+    message: Message, state: FSMContext, office: Offices
+) -> None:
     """
     Handles input of office ID for the report.
     Proceeds to the next state for sending the report photo.
     """
-    point_id = int(message.text)
-    await state.update_data(point_id=point_id, addres=point.addres)
+    office_id = int(message.text)
+    await state.update_data(office_id=office_id, addres=office.addres)
     await state.set_state(ReportsStates.send_photo)
     await message.answer(
-        text=captions.send_photo.format(addres=point.addres, point_id=point.id)
+        text=captions.send_photo.format(addres=office.addres, office_id=office.id)
     )
 
 
 @reports_router.message(
-    ReportsStates.choose_office, F.text.isdigit(), ~PointExistFilter()
+    ReportsStates.choose_office, F.text.isdigit(), ~OfficeExistFilter()
 )
 async def incorrect_office_id_handler(message: Message, state: FSMContext) -> None:
     """
@@ -158,7 +160,7 @@ async def send_report_photo_handler(
     Saves the photo and proceeds to the next state.
     """
     state_data = await state.get_data()
-    point_id = state_data.get("point_id")
+    office_id = state_data.get("office_id")
     photo = message.photo[-1]
 
     try:
@@ -174,7 +176,7 @@ async def send_report_photo_handler(
                     ).id,
                 ),
                 "created_at": datetime.now(),
-                "point_id": state_data["point_id"],
+                "office_id": state_data["office_id"],
                 "img": img_name,
             }
         )

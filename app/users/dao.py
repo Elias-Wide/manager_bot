@@ -1,11 +1,12 @@
 from datetime import datetime
-from sqlalchemy import and_, select
+from typing import List
+from sqlalchemy import and_, extract, func, select
 from asyncache import cached
 from cachetools import TTLCache
 
 from app.core.database import async_session_maker
 from app.dao.base import BaseDAO
-from app.points.models import Points
+from app.offices.models import Offices
 from app.users.models import Users, WorkDays
 
 user_cache = TTLCache(maxsize=128, ttl=150)
@@ -32,10 +33,10 @@ class UsersDAO(BaseDAO):
             user = await session.execute(
                 select(
                     Users.__table__.columns,
-                    Points.id.label("point_id"),
-                    Points.addres,
+                    Offices.id.label("office_id"),
+                    Offices.addres,
                 )
-                .join(Points, Points.id == Users.point_id, isouter=True)
+                .join(Offices, Offices.id == Users.office_id, isouter=True)
                 .where(Users.id == user_id)
             )
         if user:
@@ -53,20 +54,20 @@ class UsersDAO(BaseDAO):
 
     @classmethod
     @cached(workday_manager_cache)
-    async def get_workday_manager(cls, point_id: int) -> list[Users] | None:
+    async def get_workday_manager(cls, office_id: int) -> list[Users] | None:
         async with async_session_maker() as session:
             today = datetime.now().date()
             stmt = (
                 select(
                     Users,
-                    Points.__table__.columns,
+                    Offices.__table__.columns,
                     WorkDays.day,
                 )
                 .join(WorkDays, WorkDays.user_id == Users.id)
-                .join(Points, Points.id == Users.point_id)
+                .join(Offices, Offices.id == Users.office_id)
                 .where(
                     and_(
-                        Users.point_id == point_id,
+                        Users.office_id == office_id,
                         WorkDays.day == datetime.now().date(),
                     )
                 )
@@ -81,16 +82,23 @@ class WorkDaysDAO(BaseDAO):
     model = WorkDays
 
     @classmethod
-    async def get_user_working_days(cls, user_id: int) -> list[WorkDays]:
+    async def get_user_working_days(cls, user_id: int, month: int) -> list[WorkDays]:
         async with async_session_maker() as session:
             work_days = await session.execute(
-                select(cls.model).where(cls.model.user_id == user_id)
+                select(cls.model)
+                .where(
+                    and_(
+                        cls.model.user_id == user_id,
+                        extract("month", WorkDays.day) == month,
+                    )
+                )
+                .order_by("day")
             )
             return work_days.scalars().all()
 
     @classmethod
     async def set_user_schedule(
-        cls, user_id: int, work_days: list[datetime.date]
+        cls, user_id: int, work_days: List[datetime.date]
     ) -> None:
         """
         Replace all workdays for a user with a new list using bulk create.
@@ -105,3 +113,20 @@ class WorkDaysDAO(BaseDAO):
                 ]
                 session.add_all(work_days_objs)
             await session.commit()
+
+    @classmethod
+    async def get_region_schedule(cls, region_id: int) -> List[dict]:
+
+        async with async_session_maker() as session:
+            stmt = (
+                select(WorkDays.day, Offices.addres, Offices.id.label("office_id"))
+                .join(Offices, Offices.region_id == region_id)
+                .join(Users, Users.office_id == Offices.id)
+                .where(
+                    and_(
+                        extract("month", WorkDays.day) == datetime.now().month,
+                    )
+                )
+            )
+            workdays_list = await session.execute(stmt)
+            return workdays_list.mappings().all()

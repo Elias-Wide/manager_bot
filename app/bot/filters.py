@@ -7,8 +7,8 @@ from aiogram.types import Message
 from app.bot.utils import download_file_from_bot, generate_filename
 from app.core.config import REPORTS_DIR, settings
 from app.core.constants import FMT_JPG
-from app.points.dao import PointsDAO
-from app.points.models import Points
+from app.offices.dao import OfficesDAO
+from app.offices.models import Offices
 from app.users.dao import UsersDAO
 from app.users.models import Users
 
@@ -26,7 +26,7 @@ class ObjectExistFilter(BaseFilter):
         bool: False if object does not exist.
     """
 
-    def init(self, modelDAO: UsersDAO | PointsDAO, attr_name: str) -> None:
+    def init(self, modelDAO: UsersDAO | OfficesDAO, attr_name: str) -> None:
         self.modelDAO = modelDAO
         self.attr_name: str = attr_name
 
@@ -168,45 +168,45 @@ class NameValidationFilter(BaseFilter):
         return {"first_name": first_name, "last_name": last_name}
 
 
-class PointExistFilter(ObjectExistFilter):
+class OfficeExistFilter(ObjectExistFilter):
     """
-    Filter class to check if a point exists based on its ID.
+    Filter class to check if a office exists based on its ID.
 
     Returns:
-        bool: True if the point exists, otherwise False.
+        bool: True if the office exists, otherwise False.
     """
 
     def __init__(self) -> None:
-        self.modelDAO = PointsDAO
+        self.modelDAO = OfficesDAO
         self.attr_name = "id"
 
     async def __call__(self, message: Message) -> bool:
         """
-        Check if the point exists in the database.
+        Check if the office exists in the database.
 
         Args:
             message (Message): The incoming message object.
 
         Returns:
-            bool: True if the point exists, otherwise False.
+            bool: True if the office exists, otherwise False.
         """
         attr_value = int(message.text)
-        is_point_exist = await super().__call__(self.attr_name, attr_value)
-        if is_point_exist:
-            return {"point": is_point_exist["model_obj"]}
+        is_office_exist = await super().__call__(self.attr_name, attr_value)
+        if is_office_exist:
+            return {"office": is_office_exist["model_obj"]}
 
 
-class RegionPointFilter(PointExistFilter):
+class RegionOfficeFilter(OfficeExistFilter):
     """
-    Filter class to check if the point belongs to the same region as the user.
+    Filter class to check if the office belongs to the same region as the user.
 
     Returns:
-        bool: True if the point's region matches the user's region, otherwise False.
+        bool: True if the office's region matches the user's region, otherwise False.
     """
 
     async def __call__(self, message):
         """
-        Check if the point's region matches the user's region.
+        Check if the office's region matches the user's region.
 
         Args:
             message (Message): The incoming message object.
@@ -215,13 +215,13 @@ class RegionPointFilter(PointExistFilter):
             bool: True if the regions match, otherwise False.
         """
 
-        point: dict[str:Points] = await super().__call__(message)
-        if not point:
+        office: dict[str:Offices] = await super().__call__(message)
+        if not office:
             return False
         user: Users = await UsersDAO.get_by_attribute(
             attr_name="telegram_id", attr_value=message.from_user.id
         )
-        return point if point["point"].region_id == user.region_id else False
+        return office if office["office"].region_id == user.region_id else False
 
 
 class ValidatePhotoFilter(BaseFilter):

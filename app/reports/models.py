@@ -22,16 +22,16 @@ class Reports(Base):
         nullable=False,
     )
     created_at_date = Column(Date, nullable=False, default=datetime.now)
-    point_id = Column(ForeignKey("points.id", ondelete="CASCADE"), nullable=True)
+    office_id = Column(ForeignKey("offices.id", ondelete="CASCADE"), nullable=True)
     img = Column(String, nullable=False)
 
     __table_args__ = (
         UniqueConstraint(
             "created_at_date",
-            "point_id",
+            "office_id",
             name="unique_report_in_a_day",
         ),
     )
 
     def __str__(self):
-        return f"Отчет прихода. Офис {self.point_id} {self.datetime}"
+        return f"Отчет прихода. Офис {self.office_id} {self.datetime}"

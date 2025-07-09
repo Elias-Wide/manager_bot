@@ -1,3 +1,5 @@
+import calendar
+from datetime import datetime
 import os
 
 import random
@@ -7,10 +9,14 @@ from aiogram.types import ContentType, Message
 import openpyxl
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
+from app.bot.keyboards.calendar_kb import get_month_days
 from app.core.constants import (
     FMT_JPG,
 )
 from app.bot.init_bot import bot
+from app.offices.models import Offices
+from app.users.dao import UsersDAO, WorkDaysDAO
+from app.users.models import Users
 
 
 async def generate_filename() -> str:
@@ -179,7 +185,6 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Отчеты по офисам"
-
     headers = ["Пункт", "ID", "Менеджер", "Отчет прихода", "График работы"]
     ws.append(headers)
     header_font = Font(bold=True)
@@ -187,14 +192,6 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
         cell = ws.cell(row=1, column=col_num)
         cell.font = header_font
         cell.alignment = Alignment(horizontal="center", vertical="center")
-
-    red_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
-    green_fill = PatternFill(
-        start_color="C6EFCE", end_color="C6EFCE", fill_type="solid"
-    )
-
-    thin_border = Border(bottom=Side(style="thin", color="000000"))
-
     for row_idx, row in enumerate(region_report_data, start=2):
         row = list(row)
         print(row)
@@ -223,3 +220,90 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
     wb.save(buffer)
     buffer.seek(0)
     return buffer
+
+
+async def create_region_schedule(offices: list[Offices]) -> BytesIO:
+    today = datetime.now()
+    num_days = calendar.monthrange(today.year, today.month)[1]
+    month_dates: list = tuple(
+        d.strftime("%m.%d")
+        for d in [
+            datetime(today.year, today.month, day) for day in range(1, num_days + 1)
+        ]
+    )
+    wb_headers = ("Пункт", "iD", "Менеджер")
+    wb_headers = wb_headers + month_dates
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "График региона"
+    ws.append(wb_headers)
+    row_idx = 1
+    for office in offices:
+        row_idx += 1
+        managers_in_ws = []
+        row = [office.addres, office.id, None]
+        is_office_added = False
+        managers: list[Users] = await UsersDAO.get_objs_by_filter(office_id=office.id)
+        w_day_dict = {}
+        start_row = row_idx
+        for manager in managers:
+            w_day_dict[manager.id] = [
+                w.day.strftime("%m.%d")
+                for w in await WorkDaysDAO.get_user_working_days(
+                    user_id=manager.id, month=today.month
+                )
+            ]
+        if not managers:
+            ws.append(row)
+            for col_idx in range(4, len(wb_headers) + 1):
+                cell = ws.cell(row=start_row, column=col_idx)
+                cell.fill = red_fill
+        else:
+            for col_idx in range(4, len(wb_headers) + 1):
+                for manager in managers:
+                    if not is_office_added:
+                        is_office_added = True
+                        row[2] = str(manager)
+                        managers_in_ws.append(manager.id)
+                        ws.append(row)
+                    elif manager.id not in managers_in_ws:
+                        row = ["", "", str(manager)]
+                        managers_in_ws.append(manager.id)
+                        ws.append(row)
+                    cell = ws.cell(row=start_row, column=col_idx)
+                    if wb_headers[col_idx - 1] in w_day_dict[manager.id]:
+                        cell.fill = green_fill
+                    else:
+                        cell.fill = red_fill
+                    start_row += 1
+                start_row = row_idx
+            row_idx += len(managers) - 1
+
+    for col_idx in range(1, len(wb_headers) + 1):
+        for row_idx in range(1, len(tuple(ws.iter_rows())) + 1):
+            ws.cell(row=row_idx, column=col_idx).border = thin_border
+            ws.cell(row=row_idx, column=col_idx).alignment = Alignment(
+                horizontal="center", vertical="center"
+            )
+    for column_cells in ws.columns:
+        ws.column_dimensions[column_cells[0].column_letter].width = 5
+    ws.column_dimensions["A"].width = 35
+    ws.column_dimensions["B"].width = 10
+    ws.column_dimensions["C"].width = 25
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    return buffer
+
+
+thin_border = Border(
+    left=Side(style="thin"),
+    right=Side(style="thin"),
+    top=Side(style="thin"),
+    bottom=Side(style="thin"),
+)
+red_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+green_fill = PatternFill(
+    start_color="00008000", end_color="00008000", fill_type="solid"
+)
