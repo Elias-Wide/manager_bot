@@ -194,7 +194,6 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
         cell.alignment = Alignment(horizontal="center", vertical="center")
     for row_idx, row in enumerate(region_report_data, start=2):
         row = list(row)
-        print(row)
         if isinstance(row[2], (list, tuple)):
             row[2] = "\n".join(str(m) for m in row[2])
         if row[3] == False:
@@ -236,7 +235,7 @@ async def create_region_schedule(offices: list[Offices]) -> BytesIO:
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "График региона"
+    ws.title = "График работы"
     ws.append(wb_headers)
     row_idx = 1
     for office in offices:
@@ -273,8 +272,10 @@ async def create_region_schedule(offices: list[Offices]) -> BytesIO:
                         ws.append(row)
                     cell = ws.cell(row=start_row, column=col_idx)
                     if wb_headers[col_idx - 1] in w_day_dict[manager.id]:
+                        cell.value = "Р"
                         cell.fill = green_fill
                     else:
+                        cell.value = "В"
                         cell.fill = red_fill
                     start_row += 1
                 start_row = row_idx
