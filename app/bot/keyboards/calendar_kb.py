@@ -10,7 +10,7 @@ from aiogram.types import (
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.core.constants import CALENDAR_KEYBOARD_SIZE
-from app.bot.handlers.callbacks.menucallback import MenuCallBack
+from app.bot.handlers.subfunctions.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import (
     BACK_BTN,
     CALENDAR_BTNS,
@@ -35,9 +35,22 @@ async def get_days_btns(
     previous_menu: str = PROFILE_MENU,
 ) -> list[InlineKeyboardButton]:
     """
-    Создание клавиатуры календаря.
-    Содержит даты текущего месяца, включая несколько дней
-    пред. и след. месяцев для создания полных недель.
+    Create a calendar keyboard.
+
+    This function generates a calendar keyboard for the current month,
+    including several days from the previous and next months to form complete weeks.
+    The keyboard highlights days from the user's schedule and provides navigation buttons.
+
+    Args:
+        user_id (int): The user's Telegram ID.
+        level (int): The menu level for callback data.
+        user_schedule (list[date]): List of dates to highlight in the calendar.
+        size (int, optional): Number of buttons per row. Defaults to CALENDAR_KEYBOARD_SIZE.
+        month (int | None, optional): The month to display. Defaults to current month.
+        previous_menu (str, optional): The name of the previous menu for navigation. Defaults to PROFILE_MENU.
+
+    Returns:
+        list[InlineKeyboardButton]: List of inline keyboard buttons representing the calendar.
     """
     kb_builder = InlineKeyboardBuilder()
     btns = []
@@ -117,7 +130,16 @@ async def get_days_btns(
 
 async def get_month_days(year: int, month: int) -> list[date]:
     """
-    Возвращает список дней текущего месяца.
-    Дополнительно содержит несколько дней прошлого и след. месяцев
-    для генерации полной недели."""
+    Return a list of days for the given month.
+
+    This function returns all days of the specified month,
+    including extra days from the previous and next months to generate full weeks.
+
+    Args:
+        year (int): The year.
+        month (int): The month.
+
+    Returns:
+        list[date]: List of date objects for the calendar view.
+    """
     return [day for day in Calendar().itermonthdates(year, month)]

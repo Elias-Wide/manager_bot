@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.handlers.callbacks.main_menu import (
+from app.bot.handlers.subfunctions.main_menu import (
     get_menu,
     procces_main_menu_comand,
 )

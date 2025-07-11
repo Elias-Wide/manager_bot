@@ -9,6 +9,8 @@ from app.core.config import REPORTS_DIR, settings
 from app.core.constants import FMT_JPG
 from app.offices.dao import OfficesDAO
 from app.offices.models import Offices
+from app.regions.dao import RegionsDAO
+from app.regions.models import Regions
 from app.users.dao import UsersDAO
 from app.users.models import Users
 
@@ -112,11 +114,22 @@ class BanFilter(UserExistFilter):
 
 
 class RegionAdminFilter(UserExistFilter):
+    """Filter class to check if the user is a region admin.
+    Inherits from UserExistFilter to perform a basic registration check
+    and adds a region admin check.
+    Returns:
+        dict: Dictionary with user and region if the user is a region admin, otherwise False.
+    """
 
     async def __call__(self, message: Message):
-        is_registered_user = await super().__call__(message)
+        is_registered_user: dict[str:Users] = await super().__call__(message)
         if is_registered_user:
-            return is_registered_user["user"].is_region_admin
+            region: Regions = await RegionsDAO.get_by_attribute(
+                attr_name="ceo_id", attr_value=is_registered_user["user"].id
+            )
+            if region:
+                return {"user": is_registered_user["user"], "region": region}
+        return False
 
 
 class AdminFilter(BaseFilter):
@@ -204,7 +217,7 @@ class RegionOfficeFilter(OfficeExistFilter):
         bool: True if the office's region matches the user's region, otherwise False.
     """
 
-    async def __call__(self, message):
+    async def __call__(self, message, *args):
         """
         Check if the office's region matches the user's region.
 
@@ -214,14 +227,17 @@ class RegionOfficeFilter(OfficeExistFilter):
         Returns:
             bool: True if the regions match, otherwise False.
         """
-
+        print(args)
         office: dict[str:Offices] = await super().__call__(message)
         if not office:
             return False
         user: Users = await UsersDAO.get_by_attribute(
             attr_name="telegram_id", attr_value=message.from_user.id
         )
-        return office if office["office"].region_id == user.region_id else False
+        region: Regions = await RegionsDAO.get_by_attribute("ceo_id", user.id)
+        if not region:
+            return False
+        return office if region.ceo_id == user.id else False
 
 
 class ValidatePhotoFilter(BaseFilter):

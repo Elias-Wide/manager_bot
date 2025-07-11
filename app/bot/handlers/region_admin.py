@@ -5,8 +5,8 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 from app.bot.filters import RegionAdminFilter, RegionOfficeFilter
-from app.bot.handlers.callbacks.menucallback import RegionAdminCallBack
-from app.bot.handlers.callbacks.region_admin_menu import (
+from app.bot.handlers.subfunctions.menucallback import RegionAdminCallBack
+from app.bot.handlers.subfunctions.region_admin_menu import (
     get_all_reports,
     get_day_reports_by_region,
     get_region_schedule,
@@ -28,6 +28,7 @@ from app.bot.states import ReportsStates
 from app.core.config import REPORTS_DIR
 from app.offices.models import Offices
 from app.regions.dao import RegionsDAO
+from app.regions.models import Regions
 from app.reports.dao import ReportsDAO
 from app.reports.models import Reports
 from app.bot.scheduler import (
@@ -42,9 +43,7 @@ region_admin_router.message.filter(RegionAdminFilter())
 
 
 @region_admin_router.message(Command("wb_admin"))
-async def region_admin_menu(
-    message: Message,
-) -> None:
+async def region_admin_menu(message: Message, user: Users, region: Regions) -> None:
     """
     Start command handler for the WB admin bot.
     Initializes the bot and sets the state to the main menu.
@@ -52,7 +51,7 @@ async def region_admin_menu(
     user: Users = await UsersDAO.get_by_attribute(
         attr_name="telegram_id", attr_value=message.from_user.id
     )
-    region = await RegionsDAO.get_by_attribute(attr_name="ceo_id", attr_value=user.id)
+    # region = await RegionsDAO.get_by_attribute(attr_name="ceo_id", attr_value=user.id)
     await message.answer_photo(
         photo=await get_file("wb_admin_menu"),
         caption=captions.no_caption,
@@ -78,23 +77,23 @@ async def get_region_admin_menu(
     state: FSMContext,
 ):
     user: Users = await UsersDAO.get_by_attribute("telegram_id", callback.from_user.id)
-    # try:
-    if callback_data.menu_name == ALL_PHOTOS:
-        await get_all_reports(callback, callback_data)
-    elif callback_data.menu_name == GET_OFFICE_REPORT:
-        await state.set_state(ReportsStates.choose_report_office)
-        await callback.message.answer(text=captions.choose_office)
-    elif callback_data.menu_name == GET_DAY_REPORT:
-        await get_day_reports_by_region(callback, callback_data)
-    elif callback_data.menu_name == GET_OFFICE_MANAGERS:
-        await callback.message.answer(captions.choose_office)
-        await state.set_state(ReportsStates.office_info)
-    elif callback_data.menu_name == GET_REGION_SCHEDULE:
-        await get_region_schedule(callback, callback_data)
-    await callback.answer()
-    # except Exception as error:
-    #     print(error)
-    #     await callback.answer(text=CRITICAL_ERROR, show_alert=True)
+    try:
+        if callback_data.menu_name == ALL_PHOTOS:
+            await get_all_reports(callback, callback_data)
+        elif callback_data.menu_name == GET_OFFICE_REPORT:
+            await state.set_state(ReportsStates.choose_report_office)
+            await callback.message.answer(text=captions.choose_office)
+        elif callback_data.menu_name == GET_DAY_REPORT:
+            await get_day_reports_by_region(callback, callback_data)
+        elif callback_data.menu_name == GET_OFFICE_MANAGERS:
+            await callback.message.answer(captions.choose_office)
+            await state.set_state(ReportsStates.office_info)
+        elif callback_data.menu_name == GET_REGION_SCHEDULE:
+            await get_region_schedule(callback, callback_data)
+        await callback.answer()
+    except Exception as error:
+        print(error)
+        await callback.answer(text=CRITICAL_ERROR, show_alert=True)
 
 
 @region_admin_router.message(

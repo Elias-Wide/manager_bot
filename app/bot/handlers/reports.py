@@ -6,7 +6,7 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 from app.bot.filters import OfficeExistFilter, ValidatePhotoFilter
-from app.bot.handlers.callbacks.menucallback import MenuCallBack
+from app.bot.handlers.subfunctions.menucallback import MenuCallBack
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.banners import get_img
 from app.bot.keyboards.buttons import (

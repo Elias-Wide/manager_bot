@@ -12,6 +12,7 @@ dependencies = [
     "asyncpg>=0.30.0",
     "black>=25.1.0",
     "fastapi>=0.115.14",
+    "isort>=6.0.1",
     "itsdangerous>=2.2.0",
     "openpyxl>=3.1.5",
     "pydantic-settings>=2.10.1",

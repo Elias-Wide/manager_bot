@@ -1,7 +1,7 @@
 from datetime import datetime
 from aiogram.types import BufferedInputFile, CallbackQuery
 
-from app.bot.handlers.callbacks.menucallback import RegionAdminCallBack
+from app.bot.handlers.subfunctions.menucallback import RegionAdminCallBack
 from app.bot.keyboards.banners import get_file
 from app.bot.keyboards.captions import captions
 from app.bot.utils import create_excel_report, create_region_schedule

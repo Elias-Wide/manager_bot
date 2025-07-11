@@ -7,7 +7,11 @@ from app.reports.models import Reports
 
 
 class UsersAdmin(ModelView, model=Users):
-    """Настройка страницы пользователей."""
+    """
+    Admin page settings for the Users model.
+
+    Configures the display, search, and sorting options for users in the admin panel.
+    """
 
     page_size = ADMIN_VIEW_PAGE_SIZE
     column_list = [
@@ -34,7 +38,11 @@ class UsersAdmin(ModelView, model=Users):
 
 
 class OfficesAdmin(ModelView, model=Offices):
-    """Настройки страницы офисов."""
+    """
+    Admin page settings for the Offices model.
+
+    Configures the display, search, and sorting options for offices in the admin panel.
+    """
 
     column_list = [c.name for c in Offices.__table__.c] + [
         Offices.region,
@@ -49,7 +57,11 @@ class OfficesAdmin(ModelView, model=Offices):
 
 
 class RegionsAdmin(ModelView, model=Regions):
-    """Настройки страницы офисов."""
+    """
+    Admin page settings for the Regions model.
+
+    Configures the display, search, and sorting options for regions in the admin panel.
+    """
 
     column_list = [c.name for c in Regions.__table__.c] + [
         Regions.ceo,
@@ -64,7 +76,11 @@ class RegionsAdmin(ModelView, model=Regions):
 
 
 class ReportsAdmin(ModelView, model=Reports):
-    """Report admin page settings."""
+    """
+    Admin page settings for the Reports model.
+
+    Configures the display, search, and sorting options for reports in the admin panel.
+    """
 
     column_list = [Reports.id, Reports.office_id, Reports.created_at]
     name = "Отчет прихода"
@@ -76,6 +92,12 @@ class ReportsAdmin(ModelView, model=Reports):
 
 
 class WAdmin(ModelView, model=WorkDays):
+    """
+    Admin page settings for the WorkDays model.
+
+    Configures the display, search, and sorting options for workdays in the admin panel.
+    """
+
     column_list = [WorkDays.id, WorkDays.day, WorkDays.user]
     name = "Дни рабочие"
     name_plural = "График работы"

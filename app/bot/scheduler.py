@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 
 from aiogram.types import BufferedInputFile
-from app.bot.handlers.callbacks.region_admin_menu import get_reports_info_by_region
+from app.bot.handlers.subfunctions.region_admin_menu import get_reports_info_by_region
 from app.bot.init_bot import bot
 from app.bot.keyboards.banners import get_file
 from app.bot.utils import create_excel_report
@@ -70,6 +70,6 @@ async def notify_region_admins_about_missing_reports(
                     chat_id=admin.telegram_id,
                     document=BufferedInputFile(
                         file=excel_buffer.getvalue(),
-                        filename=f"Нет отчета прихода {work_time} {datetime.now().date()}.xlsx",
+                        filename=f"Отчеты прихода {work_time} {datetime.now().date()}.xlsx",
                     ),
                 )

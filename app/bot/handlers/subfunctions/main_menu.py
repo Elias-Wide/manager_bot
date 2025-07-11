@@ -1,7 +1,7 @@
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.handlers.callbacks.menu_processor import get_menu_content
-from app.bot.handlers.callbacks.menucallback import MenuCallBack
+from app.bot.handlers.subfunctions.menu_processor import get_menu_content
+from app.bot.handlers.subfunctions.menucallback import MenuCallBack
 from app.bot.keyboards.buttons import CRITICAL_ERROR, MAIN_MENU
 from app.users.dao import UsersDAO
 

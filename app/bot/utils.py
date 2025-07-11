@@ -9,7 +9,6 @@ from aiogram.types import ContentType, Message
 import openpyxl
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
-from app.bot.keyboards.calendar_kb import get_month_days
 from app.core.constants import (
     FMT_JPG,
 )
@@ -97,9 +96,7 @@ async def download_file(file, destination) -> str:
     filename_with_format = file_name + FMT_JPG
     path = destination / (file_name + FMT_JPG)
     file_from_bot = await bot.get_file(file.file_id)
-    destination_file = await bot.download_file(
-        file_from_bot.file_path, os.path.join(os.getcwd(), path)
-    )
+    await bot.download_file(file_from_bot.file_path, os.path.join(os.getcwd(), path))
     return file_name
 
 
@@ -222,6 +219,26 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
 
 
 async def create_region_schedule(offices: list[Offices]) -> BytesIO:
+    """
+    Generate an Excel file with the work schedule for all offices.
+
+    The function creates an Excel file with the following logic:
+    - Determines the current month and generates a header row with all days of the month.
+    - Adds columns: "Пункт", "ID", "Менеджер", followed by one column for each day of the month.
+    - For each office:
+        - Adds a row for each manager, showing their work schedule for the month.
+        - If there are no managers, adds a row with empty manager and fills all days with red.
+        - For each manager, marks "Р" (work) with green fill if the manager works that day, or "В" (off) with red fill otherwise.
+    - Adds thin borders and center alignment to all cells.
+    - Sets custom column widths for better readability.
+    - Saves the workbook to a BytesIO buffer and returns it.
+
+    Args:
+        offices (list[Offices]): List of office objects.
+
+    Returns:
+        BytesIO: The buffer containing the generated Excel file.
+    """
     today = datetime.now()
     num_days = calendar.monthrange(today.year, today.month)[1]
     month_dates: list = tuple(
