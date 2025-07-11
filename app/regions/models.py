@@ -1,10 +1,9 @@
 from typing import List
+
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-
 from app.core.database import Base
-
 from app.users.models import Users  # noqa
 
 

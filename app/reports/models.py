@@ -1,12 +1,7 @@
 from datetime import datetime
-from sqlalchemy import (
-    Column,
-    Date,
-    DateTime,
-    ForeignKey,
-    String,
-    UniqueConstraint,
-)
+
+from sqlalchemy import (Column, Date, DateTime, ForeignKey, String,
+                        UniqueConstraint)
 
 from app.core.database import Base
 

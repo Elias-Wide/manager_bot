@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from aiogram.types import BufferedInputFile, CallbackQuery
 
 from app.bot.handlers.subfunctions.menucallback import RegionAdminCallBack
@@ -10,8 +11,7 @@ from app.offices.dao import OfficesDAO
 from app.offices.models import Offices
 from app.reports.dao import ReportsDAO
 from app.reports.models import Reports
-from app.users.dao import UsersDAO, WorkDaysDAO
-from app.users.models import WorkDays
+from app.users.dao import UsersDAO
 
 
 async def get_all_reports(

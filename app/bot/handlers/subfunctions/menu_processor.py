@@ -1,14 +1,9 @@
 from aiogram.types import InlineKeyboardMarkup, InputMediaPhoto
 
-from app.bot.keyboards.buttons import (
-    MAIN_MENU,
-    MAIN_MENU_BUTTONS,
-    PROFILE_MENU,
-    PROFILE_MENU_BTNS,
-    REPORTS_MENU,
-    REPORTS_MENU_BTNS,
-    REPORTS_MENU_BTNS_MINI,
-)
+from app.bot.keyboards.buttons import (MAIN_MENU, MAIN_MENU_BUTTONS,
+                                       PROFILE_MENU, PROFILE_MENU_BTNS,
+                                       REPORTS_MENU, REPORTS_MENU_BTNS,
+                                       REPORTS_MENU_BTNS_MINI)
 from app.bot.keyboards.captions import get_user_full_data
 from app.bot.keyboards.main_kb_builder import get_image_and_kb
 from app.offices.constants import NO_OFFICE_ID

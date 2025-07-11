@@ -1,25 +1,18 @@
 from datetime import datetime
+
 from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.handlers.subfunctions.main_menu import (
-    get_menu,
-    procces_main_menu_comand,
-)
+from app.bot.handlers.subfunctions.main_menu import (get_menu,
+                                                     procces_main_menu_comand)
 from app.bot.keyboards.banners import get_img
-from app.bot.keyboards.buttons import (
-    CHANGE_MONTH,
-    CONFIRM_SCHEDULE,
-    CRITICAL_ERROR,
-    EMPTY_BTN,
-    MAIN_MENU_PAGES,
-    NONE_MENU,
-    PROFILE_MENU,
-    SCHEDULE,
-)
+from app.bot.keyboards.buttons import (CHANGE_MONTH, CONFIRM_SCHEDULE,
+                                       CRITICAL_ERROR, EMPTY_BTN,
+                                       MAIN_MENU_PAGES, NONE_MENU,
+                                       PROFILE_MENU, SCHEDULE)
 from app.bot.keyboards.calendar_kb import get_days_btns
 from app.bot.keyboards.main_kb_builder import MenuCallBack
 from app.bot.states import ProfileStates
@@ -27,7 +20,6 @@ from app.core.constants import DATE_FORMAT
 from app.offices.models import Offices
 from app.users.dao import UsersDAO, WorkDaysDAO
 from app.users.models import Users
-
 
 user_router = Router()
 

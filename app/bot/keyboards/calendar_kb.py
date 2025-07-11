@@ -2,25 +2,15 @@ from calendar import Calendar
 from datetime import date, datetime
 from typing import TypeAlias
 
-from aiogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    ReplyKeyboardMarkup,
-)
+from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                           ReplyKeyboardMarkup)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.core.constants import CALENDAR_KEYBOARD_SIZE
 from app.bot.handlers.subfunctions.menucallback import MenuCallBack
-from app.bot.keyboards.buttons import (
-    BACK_BTN,
-    CALENDAR_BTNS,
-    CHANGE_MONTH,
-    CONFIRM_SCHEDULE_BTN,
-    MONTH,
-    NONE_MENU,
-    PROFILE_MENU,
-    SCHEDULE,
-)
+from app.bot.keyboards.buttons import (BACK_BTN, CALENDAR_BTNS, CHANGE_MONTH,
+                                       CONFIRM_SCHEDULE_BTN, MONTH, NONE_MENU,
+                                       PROFILE_MENU, SCHEDULE)
+from app.core.constants import CALENDAR_KEYBOARD_SIZE
 
 KeyboardMarkup: TypeAlias = InlineKeyboardMarkup | ReplyKeyboardMarkup
 

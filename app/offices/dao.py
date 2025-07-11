@@ -1,6 +1,7 @@
 from sqlalchemy import and_, func, insert, select
-from app.dao.base import BaseDAO
+
 from app.core.database import async_session_maker
+from app.dao.base import BaseDAO
 from app.offices.constants import NO_OFFICE_ADDRES, NO_OFFICE_ID
 from app.offices.models import Offices
 

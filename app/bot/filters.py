@@ -1,6 +1,7 @@
 """Filters for handling user-related checks in the bot."""
 
 import os
+
 from aiogram.filters import BaseFilter
 from aiogram.types import Message
 
@@ -127,6 +128,7 @@ class RegionAdminFilter(UserExistFilter):
             region: Regions = await RegionsDAO.get_by_attribute(
                 attr_name="ceo_id", attr_value=is_registered_user["user"].id
             )
+            print(f"{is_registered_user=}, {region=}")
             if region:
                 return {"user": is_registered_user["user"], "region": region}
         return False

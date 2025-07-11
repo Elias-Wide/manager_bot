@@ -1,20 +1,19 @@
-from aiogram.types import Update
-from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
 import logging
-from sqladmin import Admin
+from contextlib import asynccontextmanager
+
+from aiogram.types import Update
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from fastapi import FastAPI, Request
+from sqladmin import Admin
 
 from app.admin.adminview import admin_views
 from app.admin.auth import authentication_backend
-from app.bot.init_bot import bot, dp, stop_bot, start_bot
-from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.bot.handlers.registration import registration_router
+from app.bot.init_bot import bot, dp, start_bot, stop_bot
+from app.bot.keyboards.main_kb_builder import set_main_menu
 from app.bot.routers import main_router
-from app.bot.scheduler import (
-    delete_reports_photo,
-    notify_region_admins_about_missing_reports,
-)
+from app.bot.scheduler import (delete_reports_photo,
+                               notify_region_admins_about_missing_reports)
 from app.core.config import settings
 from app.core.database import engine
 

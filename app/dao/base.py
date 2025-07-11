@@ -1,12 +1,11 @@
 from typing import Generic, TypeVar
+
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy import insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
-
 from app.core.database import Base, async_session_maker
-
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)

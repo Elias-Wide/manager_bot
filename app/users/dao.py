@@ -1,15 +1,16 @@
 from datetime import datetime
 from typing import List
-from sqlalchemy import and_, extract, func, select
+
 from asyncache import cached
 from cachetools import TTLCache
+from sqlalchemy import and_, extract, func, select
 
 from app.core.database import async_session_maker
 from app.dao.base import BaseDAO
 from app.offices.models import Offices
 from app.users.models import Users, WorkDays
 
-user_cache = TTLCache(maxsize=128, ttl=150)
+user_cache = TTLCache(maxsize=128, ttl=30)
 workday_manager_cache = TTLCache(maxsize=128, ttl=300)
 
 

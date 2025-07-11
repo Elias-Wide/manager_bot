@@ -1,8 +1,10 @@
-from datetime import datetime
 import os
+from datetime import datetime
 
 from aiogram.types import BufferedInputFile
-from app.bot.handlers.subfunctions.region_admin_menu import get_reports_info_by_region
+
+from app.bot.handlers.subfunctions.region_admin_menu import \
+    get_reports_info_by_region
 from app.bot.init_bot import bot
 from app.bot.keyboards.banners import get_file
 from app.bot.utils import create_excel_report

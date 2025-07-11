@@ -6,7 +6,6 @@ from app.bot.utils import is_file_in_dir
 from app.core.config import STATIC_DIR
 from app.core.constants import FMT_JPG
 
-
 BANNERS_DIR = STATIC_DIR / "banners"
 
 

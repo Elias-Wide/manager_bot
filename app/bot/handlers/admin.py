@@ -8,7 +8,6 @@ from app.bot.states import AdminStates
 from app.bot.utils import read_excel_file
 from app.offices.dao import OfficesDAO
 
-
 admin_router = Router()
 admin_router.message.filter(AdminFilter())
 

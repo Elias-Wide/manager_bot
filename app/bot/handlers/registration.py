@@ -2,22 +2,15 @@ from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import (
-    CallbackQuery,
-    Message,
-)
+from aiogram.types import CallbackQuery, Message
 
-from app.bot.filters import (
-    NameValidationFilter,
-    OfficeExistFilter,
-    UserExistFilter,
-)
-from app.bot.keyboards.registration_kb import create_registration_kb
+from app.bot.filters import (NameValidationFilter, OfficeExistFilter,
+                             UserExistFilter)
 from app.bot.keyboards.captions import captions
+from app.bot.keyboards.registration_kb import create_registration_kb
 from app.bot.states import RegistrationStates
 from app.offices.models import Offices
 from app.users.dao import UsersDAO
-
 
 registration_router = Router()
 registration_router.message.filter(~UserExistFilter())

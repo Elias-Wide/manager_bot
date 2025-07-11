@@ -7,23 +7,16 @@ from aiogram.types import CallbackQuery, Message
 from app.bot.filters import RegionAdminFilter, RegionOfficeFilter
 from app.bot.handlers.subfunctions.menucallback import RegionAdminCallBack
 from app.bot.handlers.subfunctions.region_admin_menu import (
-    get_all_reports,
-    get_day_reports_by_region,
-    get_region_schedule,
-)
+    get_all_reports, get_day_reports_by_region, get_region_schedule)
 from app.bot.keyboards.banners import get_file
-from app.bot.keyboards.buttons import (
-    ALL_PHOTOS,
-    CRITICAL_ERROR,
-    GET_DAY_REPORT,
-    GET_OFFICE_MANAGERS,
-    GET_OFFICE_REPORT,
-    GET_REGION_SCHEDULE,
-    WB_ADMIN_MENU_BTNS,
-    WB_ADMIN_MENU_PAGES,
-)
+from app.bot.keyboards.buttons import (ALL_PHOTOS, CRITICAL_ERROR,
+                                       GET_DAY_REPORT, GET_OFFICE_MANAGERS,
+                                       GET_OFFICE_REPORT, GET_REGION_SCHEDULE,
+                                       WB_ADMIN_MENU_BTNS, WB_ADMIN_MENU_PAGES)
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.main_kb_builder import get_btns
+from app.bot.scheduler import (delete_reports_photo,
+                               notify_region_admins_about_missing_reports)
 from app.bot.states import ReportsStates
 from app.core.config import REPORTS_DIR
 from app.offices.models import Offices
@@ -31,10 +24,6 @@ from app.regions.dao import RegionsDAO
 from app.regions.models import Regions
 from app.reports.dao import ReportsDAO
 from app.reports.models import Reports
-from app.bot.scheduler import (
-    delete_reports_photo,
-    notify_region_admins_about_missing_reports,
-)
 from app.users.dao import UsersDAO
 from app.users.models import Users
 
@@ -48,10 +37,9 @@ async def region_admin_menu(message: Message, user: Users, region: Regions) -> N
     Start command handler for the WB admin bot.
     Initializes the bot and sets the state to the main menu.
     """
-    user: Users = await UsersDAO.get_by_attribute(
-        attr_name="telegram_id", attr_value=message.from_user.id
-    )
-    # region = await RegionsDAO.get_by_attribute(attr_name="ceo_id", attr_value=user.id)
+    # user: Users = await UsersDAO.get_by_attribute(
+    #     attr_name="telegram_id", attr_value=message.from_user.id
+    # )
     await message.answer_photo(
         photo=await get_file("wb_admin_menu"),
         caption=captions.no_caption,
@@ -76,7 +64,7 @@ async def get_region_admin_menu(
     callback_data: RegionAdminCallBack,
     state: FSMContext,
 ):
-    user: Users = await UsersDAO.get_by_attribute("telegram_id", callback.from_user.id)
+    # user: Users = await UsersDAO.get_by_tg_id("telegram_id", callback.from_user.id)
     try:
         if callback_data.menu_name == ALL_PHOTOS:
             await get_all_reports(callback, callback_data)

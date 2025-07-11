@@ -1,18 +1,16 @@
 import calendar
-from datetime import datetime
 import os
-
 import random
 import string
+from datetime import datetime
 from io import BytesIO
-from aiogram.types import ContentType, Message
+
 import openpyxl
+from aiogram.types import ContentType, Message
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
-from app.core.constants import (
-    FMT_JPG,
-)
 from app.bot.init_bot import bot
+from app.core.constants import FMT_JPG
 from app.offices.models import Offices
 from app.users.dao import UsersDAO, WorkDaysDAO
 from app.users.models import Users

@@ -1,9 +1,10 @@
 from sqladmin import ModelView
+
 from app.core.constants import ADMIN_VIEW_PAGE_SIZE
 from app.offices.models import Offices
 from app.regions.models import Regions
-from app.users.models import Users, WorkDays
 from app.reports.models import Reports
+from app.users.models import Users, WorkDays
 
 
 class UsersAdmin(ModelView, model=Users):

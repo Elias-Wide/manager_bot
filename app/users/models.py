@@ -1,13 +1,5 @@
-from sqlalchemy import (
-    BOOLEAN,
-    BigInteger,
-    Column,
-    Date,
-    Integer,
-    ForeignKey,
-    String,
-    UniqueConstraint,
-)
+from sqlalchemy import (BOOLEAN, BigInteger, Column, Date, ForeignKey, Integer,
+                        String, UniqueConstraint)
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base

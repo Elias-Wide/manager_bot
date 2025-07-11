@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -7,15 +8,11 @@ from aiogram.types import CallbackQuery, Message
 
 from app.bot.filters import OfficeExistFilter, ValidatePhotoFilter
 from app.bot.handlers.subfunctions.menucallback import MenuCallBack
-from app.bot.keyboards.captions import captions
 from app.bot.keyboards.banners import get_img
-from app.bot.keyboards.buttons import (
-    CHOOSE_OFFICE,
-    CRITICAL_ERROR,
-    MY_OFFICE_REPORT,
-    OTHER_OFFICE_REPORT,
-    REPORTS_MENU,
-)
+from app.bot.keyboards.buttons import (CHOOSE_OFFICE, CRITICAL_ERROR,
+                                       MY_OFFICE_REPORT, OTHER_OFFICE_REPORT,
+                                       REPORTS_MENU)
+from app.bot.keyboards.captions import captions
 from app.bot.keyboards.main_kb_builder import get_btns
 from app.bot.states import ReportsStates
 from app.offices.models import Offices

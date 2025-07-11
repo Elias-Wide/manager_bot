@@ -4,7 +4,6 @@ from typing import Optional
 from pydantic import Field, SecretStr, ValidationInfo, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = BASE_DIR / "static"
 REPORTS_DIR = STATIC_DIR / "reports"
