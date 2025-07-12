@@ -9,9 +9,13 @@ from aiogram.types import CallbackQuery, Message
 from app.bot.filters import OfficeExistFilter, ValidatePhotoFilter
 from app.bot.handlers.subfunctions.menucallback import MenuCallBack
 from app.bot.keyboards.banners import get_img
-from app.bot.keyboards.buttons import (CHOOSE_OFFICE, CRITICAL_ERROR,
-                                       MY_OFFICE_REPORT, OTHER_OFFICE_REPORT,
-                                       REPORTS_MENU)
+from app.bot.keyboards.buttons import (
+    CHOOSE_OFFICE,
+    CRITICAL_ERROR,
+    MY_OFFICE_REPORT,
+    OTHER_OFFICE_REPORT,
+    REPORTS_MENU,
+)
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.main_kb_builder import get_btns
 from app.bot.states import ReportsStates
@@ -122,14 +126,18 @@ async def send_report_photo(
     await state.update_data(office_id=office_id, addres=office.addres)
     await state.set_state(ReportsStates.send_photo)
     await message.answer(
-        text=captions.send_photo.format(addres=office.addres, office_id=office.id)
+        text=captions.send_photo.format(
+            addres=office.addres, office_id=office.id
+        )
     )
 
 
 @reports_router.message(
     ReportsStates.choose_office, F.text.isdigit(), ~OfficeExistFilter()
 )
-async def incorrect_office_id_handler(message: Message, state: FSMContext) -> None:
+async def incorrect_office_id_handler(
+    message: Message, state: FSMContext
+) -> None:
     """
     Handles incorrect office ID input.
     Sends an error message.
@@ -148,7 +156,9 @@ async def incorrect_office_id_format_handler(
     await message.answer(text="Допускаются только цифры.")
 
 
-@reports_router.message(ReportsStates.send_photo, F.photo, ValidatePhotoFilter())
+@reports_router.message(
+    ReportsStates.send_photo, F.photo, ValidatePhotoFilter()
+)
 async def send_report_photo_handler(
     message: Message, state: FSMContext, img_name: str
 ) -> None:
@@ -183,7 +193,9 @@ async def send_report_photo_handler(
         print(error)
         if "unique_report_in_a_day" in str(error):
             await message.answer(
-                text=captions.report_created_today.format(addres=state_data["addres"])
+                text=captions.report_created_today.format(
+                    addres=state_data["addres"]
+                )
             )
         else:
             await message.answer(text=CRITICAL_ERROR, show_alert=True)
@@ -200,5 +212,7 @@ async def incorrect_photo_handler(
     """
     state_data = await state.get_data()
     await message.answer(
-        text=captions.reports_incorrect_photo_format.format(addres=state_data["addres"])
+        text=captions.reports_incorrect_photo_format.format(
+            addres=state_data["addres"]
+        )
     )

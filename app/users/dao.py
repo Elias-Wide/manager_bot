@@ -83,7 +83,9 @@ class WorkDaysDAO(BaseDAO):
     model = WorkDays
 
     @classmethod
-    async def get_user_working_days(cls, user_id: int, month: int) -> list[WorkDays]:
+    async def get_user_working_days(
+        cls, user_id: int, month: int
+    ) -> list[WorkDays]:
         async with async_session_maker() as session:
             work_days = await session.execute(
                 select(cls.model)
@@ -120,7 +122,9 @@ class WorkDaysDAO(BaseDAO):
 
         async with async_session_maker() as session:
             stmt = (
-                select(WorkDays.day, Offices.addres, Offices.id.label("office_id"))
+                select(
+                    WorkDays.day, Offices.addres, Offices.id.label("office_id")
+                )
                 .join(Offices, Offices.region_id == region_id)
                 .join(Users, Users.office_id == Offices.id)
                 .where(
@@ -131,3 +135,13 @@ class WorkDaysDAO(BaseDAO):
             )
             workdays_list = await session.execute(stmt)
             return workdays_list.mappings().all()
+
+    @classmethod
+    async def delete_old_objs(cls) -> None:
+        """Delete workdays older than the current month."""
+        async with async_session_maker() as session:
+            await session.execute(
+                WorkDays.__table__.delete().where(
+                    extract("month", WorkDays.day) < datetime.now().month
+                )
+            )

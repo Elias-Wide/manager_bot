@@ -1,13 +1,19 @@
 from typing import TypeAlias
 
 from aiogram import Bot
-from aiogram.types import (BotCommand, InlineKeyboardButton,
-                           InlineKeyboardMarkup, InputMediaPhoto,
-                           ReplyKeyboardMarkup)
+from aiogram.types import (
+    BotCommand,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    InputMediaPhoto,
+    ReplyKeyboardMarkup,
+)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from app.bot.handlers.subfunctions.menucallback import (MenuCallBack,
-                                                        RegionAdminCallBack)
+from app.bot.handlers.subfunctions.menucallback import (
+    MenuCallBack,
+    RegionAdminCallBack,
+)
 from app.bot.keyboards.banners import get_img
 from app.bot.keyboards.buttons import BACK_BTN, MAIN_MENU, MAIN_MENU_COMMANDS
 from app.core.constants import DEFAULT_KEYBOARD_SIZE

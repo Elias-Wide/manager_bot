@@ -27,7 +27,9 @@ async def procces_main_menu_comand(
         await message.answer(text=CRITICAL_ERROR)
 
 
-async def get_menu(callback: CallbackQuery, callback_data: MenuCallBack) -> None:
+async def get_menu(
+    callback: CallbackQuery, callback_data: MenuCallBack
+) -> None:
     user = await UsersDAO.get_by_attribute(
         attr_name="telegram_id", attr_value=callback.from_user.id
     )

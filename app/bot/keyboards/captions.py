@@ -18,7 +18,9 @@ class Captions:
     )
     reports_menu: str = "Отправить отчет прихода 📨"
     incorrect_phone_number: str = "Неверный формат номера."
-    phone_number_question: str = "Укажите ваш номер телефона в формате +7XXXXXXXXXX."
+    phone_number_question: str = (
+        "Укажите ваш номер телефона в формате +7XXXXXXXXXX."
+    )
     office_id_question: str = (
         "Укажите ID пункта, в котором вы работаете.\n"
         "Если нет постоянного пункта - отправьте 1."
@@ -30,10 +32,16 @@ class Captions:
     )
     no_reports_today: str = "На сегодня отчетов нет."
     incorrect_office_id_format: str = "ID должен быть числом"
-    report_created_today: str = "❕Отчет для {addres} на сегодня уже отправлен❕"
-    reports_incorrect_photo_format: str = "❌Пожалуйста, отправьте фото для отчета.❌"
+    report_created_today: str = (
+        "❕Отчет для {addres} на сегодня уже отправлен❕"
+    )
+    reports_incorrect_photo_format: str = (
+        "❌Пожалуйста, отправьте фото для отчета.❌"
+    )
     reports_success: str = "✅Отчет успешно отправлен✅"
-    send_photo: str = "Пункт {addres} iD {office_id}\n\n" "Загрузите фото для отчета."
+    send_photo: str = (
+        "Пункт {addres} iD {office_id}\n\n" "Загрузите фото для отчета."
+    )
     schedule_saved: str = "✅ График успешно сохранен ✅"
 
     def __getattr__(self, name):
@@ -56,7 +64,9 @@ class Captions:
             f" @{report["username"]}\n"
         )
 
-    async def get_office_info(self, office: Offices, managers: list[Users]) -> str:
+    async def get_office_info(
+        self, office: Offices, managers: list[Users]
+    ) -> str:
         result_str: str = office.get_full_info()
         working_managers_id: Users = tuple(
             m.id for m in (await UsersDAO.get_workday_manager(office.id))

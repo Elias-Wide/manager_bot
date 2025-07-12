@@ -19,7 +19,9 @@ async def procces_dnwld_office_command(message: Message, state: FSMContext):
     await state.set_state(AdminStates.dwnld_offices)
 
 
-@admin_router.message(AdminStates.dwnld_offices, F.content_type == ContentType.DOCUMENT)
+@admin_router.message(
+    AdminStates.dwnld_offices, F.content_type == ContentType.DOCUMENT
+)
 async def proccess_dwnld_file(message: Message, state: FSMContext):
     """Обработка сообщения, загрузка и обработка файла."""
     office_list = await read_excel_file(message=message)

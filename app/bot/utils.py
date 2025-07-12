@@ -25,7 +25,9 @@ async def generate_filename() -> str:
     """
     filename = [
         random.choice(
-            string.ascii_lowercase + string.digits if i != 5 else string.ascii_uppercase
+            string.ascii_lowercase + string.digits
+            if i != 5
+            else string.ascii_uppercase
         )
         for i in range(10)
     ]
@@ -94,7 +96,9 @@ async def download_file(file, destination) -> str:
     filename_with_format = file_name + FMT_JPG
     path = destination / (file_name + FMT_JPG)
     file_from_bot = await bot.get_file(file.file_id)
-    await bot.download_file(file_from_bot.file_path, os.path.join(os.getcwd(), path))
+    await bot.download_file(
+        file_from_bot.file_path, os.path.join(os.getcwd(), path)
+    )
     return file_name
 
 
@@ -194,7 +198,11 @@ async def create_excel_report(region_report_data: list[tuple]) -> BytesIO:
         if row[3] == False:
             row[3] = "НЕТ ОТЧЕТА"
         ws.append(row)
-        fill = red_fill if any(cell == "НЕТ ОТЧЕТА" for cell in row) else green_fill
+        fill = (
+            red_fill
+            if any(cell == "НЕТ ОТЧЕТА" for cell in row)
+            else green_fill
+        )
         for col_idx in range(1, len(headers) + 1):
             cell = ws.cell(row=row_idx, column=col_idx)
             cell.fill = fill
@@ -242,7 +250,8 @@ async def create_region_schedule(offices: list[Offices]) -> BytesIO:
     month_dates: list = tuple(
         d.strftime("%m.%d")
         for d in [
-            datetime(today.year, today.month, day) for day in range(1, num_days + 1)
+            datetime(today.year, today.month, day)
+            for day in range(1, num_days + 1)
         ]
     )
     wb_headers = ("Пункт", "iD", "Менеджер")
@@ -258,7 +267,9 @@ async def create_region_schedule(offices: list[Offices]) -> BytesIO:
         managers_in_ws = []
         row = [office.addres, office.id, None]
         is_office_added = False
-        managers: list[Users] = await UsersDAO.get_objs_by_filter(office_id=office.id)
+        managers: list[Users] = await UsersDAO.get_objs_by_filter(
+            office_id=office.id
+        )
         w_day_dict = {}
         start_row = row_idx
         for manager in managers:
@@ -319,7 +330,9 @@ thin_border = Border(
     top=Side(style="thin"),
     bottom=Side(style="thin"),
 )
-red_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
+red_fill = PatternFill(
+    start_color="FFC7CE", end_color="FFC7CE", fill_type="solid"
+)
 green_fill = PatternFill(
     start_color="00008000", end_color="00008000", fill_type="solid"
 )

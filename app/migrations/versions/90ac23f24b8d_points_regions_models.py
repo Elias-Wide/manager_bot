@@ -44,10 +44,14 @@ def upgrade() -> None:
         ),
         sa.Column("name", sa.String(), nullable=True),
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(["region_id"], ["regions.id"], ondelete="SET NULL"),
+        sa.ForeignKeyConstraint(
+            ["region_id"], ["regions.id"], ondelete="SET NULL"
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.add_column("users", sa.Column("first_name", sa.String(), nullable=False))
+    op.add_column(
+        "users", sa.Column("first_name", sa.String(), nullable=False)
+    )
     op.add_column("users", sa.Column("last_name", sa.String(), nullable=True))
     op.alter_column(
         "workdays",

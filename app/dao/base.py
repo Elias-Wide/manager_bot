@@ -69,7 +69,9 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         async with async_session_maker() as session:
             try:
-                query = insert(cls.model).values(**data).returning(cls.model.id)
+                query = (
+                    insert(cls.model).values(**data).returning(cls.model.id)
+                )
                 object = await session.execute(query)
                 await session.commit()
                 return object.mappings().first()
@@ -151,7 +153,9 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         async with async_session_maker() as session:
             try:
-                db_objs = await session.execute(select(cls.model).filter_by(**filters))
+                db_objs = await session.execute(
+                    select(cls.model).filter_by(**filters)
+                )
                 result = db_objs.scalars().all()
                 return result if result else []
             except Exception as error:
