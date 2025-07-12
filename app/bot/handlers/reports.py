@@ -97,6 +97,12 @@ async def office_report_mixin(
         attr_value=callback.from_user.id,
     )
     user_data = await UsersDAO.get_user_full_data(user_id=user.id)
+    if user_data["office_id"] == 1:
+        await callback.answer(
+            text=captions.no_manager_office,
+            show_alert=True,
+        )
+        return
     await state.update_data(
         office_id=user_data["office_id"],
         addres=user_data["addres"],

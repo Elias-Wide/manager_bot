@@ -9,6 +9,7 @@ from app.bot.filters import (
     OfficeExistFilter,
     UserExistFilter,
 )
+from app.bot.keyboards.banners import get_file
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.registration_kb import create_registration_kb
 from app.bot.states import RegistrationStates
@@ -129,7 +130,9 @@ async def finish_registration(
         username=message.from_user.username,
         office_id=office.id,
     )
-    user_data = await state.get_data()
-    print(user_data)
-    await UsersDAO.create(user_data)
+    await UsersDAO.create(await state.get_data())
     await state.clear()
+    await message.answer_photo(
+        photo=await get_file("registration_done"),
+        caption=captions.registration_success,
+    )
