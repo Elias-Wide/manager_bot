@@ -1,7 +1,13 @@
 from datetime import datetime
 
-from sqlalchemy import (Column, Date, DateTime, ForeignKey, String,
-                        UniqueConstraint)
+from sqlalchemy import (
+    Column,
+    Date,
+    DateTime,
+    ForeignKey,
+    String,
+    UniqueConstraint,
+)
 
 from app.core.database import Base
 
@@ -17,7 +23,9 @@ class Reports(Base):
         nullable=False,
     )
     created_at_date = Column(Date, nullable=False, default=datetime.now)
-    office_id = Column(ForeignKey("offices.id", ondelete="CASCADE"), nullable=True)
+    office_id = Column(
+        ForeignKey("offices.id", ondelete="CASCADE"), nullable=True
+    )
     img = Column(String, nullable=False)
 
     __table_args__ = (

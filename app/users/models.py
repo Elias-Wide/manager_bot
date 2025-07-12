@@ -1,22 +1,48 @@
-from sqlalchemy import (BOOLEAN, BigInteger, Column, Date, ForeignKey, Integer,
-                        String, UniqueConstraint)
+from sqlalchemy import (
+    BOOLEAN,
+    BigInteger,
+    Column,
+    Date,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 
 
 class Users(Base):
+    """
+    Model representing a user in the system.
+
+    Attributes:
+        telegram_id (int): Unique Telegram user ID.
+        first_name (str): User's first name.
+        last_name (str): User's last name (optional).
+        phone_number (str): User's phone number (unique).
+        username (str): Telegram username.
+        ban (bool): Whether the user is banned.
+        office_id (int): Foreign key to the user's office.
+        offices (Offices): Relationship to the Offices model (managed offices).
+        work_days (list[WorkDays]): Relationship to the user's workdays.
+
+    Table constraints:
+        - Unique constraint on (telegram_id, phone_number).
+
+    Methods:
+        __str__: Returns a string representation of the user.
+        get_full_info: Returns a detailed string with user information.
+    """
 
     telegram_id = Column(BigInteger, unique=True, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=True)
     phone_number = Column(String, nullable=False, unique=True)
     username = Column(String, nullable=False)
-    is_region_admin = Column(BOOLEAN, default=False)
-    region_id = Column(ForeignKey("regions.id", ondelete="SET NULL"), nullable=True)
     ban = Column(BOOLEAN, default=False)
     office_id = Column(ForeignKey("offices.id"), nullable=False)
-    region = relationship("Regions", back_populates="users", foreign_keys=[region_id])
     offices = relationship(
         "Offices",
         back_populates="managers",
@@ -49,7 +75,7 @@ class Users(Base):
 
 class WorkDays(Base):
     """
-    Model for tracking user workdays.
+    Model for tracking user working days.
     Args:
         user_id: Telegram ID of the user.
         day: Date of the workday.

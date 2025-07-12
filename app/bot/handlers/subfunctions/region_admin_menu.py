@@ -18,7 +18,9 @@ async def get_all_reports(
     callback: CallbackQuery,
     callback_data: RegionAdminCallBack,
 ) -> None:
-    reports = await ReportsDAO.get_reports_by_region(region_id=callback_data.region_id)
+    reports = await ReportsDAO.get_reports_by_region(
+        region_id=callback_data.region_id
+    )
     if reports:
         for report in reports:
             await callback.message.answer_photo(

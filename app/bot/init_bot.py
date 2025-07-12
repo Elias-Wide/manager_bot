@@ -37,7 +37,9 @@ async def stop_bot():
     """
     try:
 
-        await bot.send_message(settings.telegram.admin_id, "The bot has been stopped.")
+        await bot.send_message(
+            settings.telegram.admin_id, "The bot has been stopped."
+        )
     except:
         pass
 

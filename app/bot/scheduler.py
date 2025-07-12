@@ -3,19 +3,22 @@ from datetime import datetime
 
 from aiogram.types import BufferedInputFile
 
-from app.bot.handlers.subfunctions.region_admin_menu import \
-    get_reports_info_by_region
+from app.bot.handlers.subfunctions.region_admin_menu import (
+    get_reports_info_by_region,
+)
 from app.bot.init_bot import bot
 from app.bot.keyboards.banners import get_file
 from app.bot.utils import create_excel_report
 from app.core.config import REPORTS_DIR
 from app.core.constants import FMT_JPG
 from app.regions.dao import RegionsDAO
-from app.users.dao import UsersDAO
+from app.users.dao import UsersDAO, WorkDaysDAO
 from app.users.models import Users
 
 
-async def delete_reports_photo(dir: str = REPORTS_DIR, file_type: str = FMT_JPG):
+async def delete_reports_photo(
+    dir: str = REPORTS_DIR, file_type: str = FMT_JPG
+):
     """
     Delete all files with the specified file_type (e.g., .jpeg) from the reports directory.
 
@@ -75,3 +78,11 @@ async def notify_region_admins_about_missing_reports(
                         filename=f"Отчеты прихода {work_time} {datetime.now().date()}.xlsx",
                     ),
                 )
+
+
+async def delete_old_workdays() -> None:
+    """
+    Delete workdays older than the current month.
+    """
+    await WorkDaysDAO.delete_old_objs()
+    # Clean up old report photos

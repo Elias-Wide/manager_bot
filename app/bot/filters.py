@@ -82,7 +82,9 @@ class UserExistFilter(ObjectExistFilter):
             bool: True if the user exists, otherwise False.
         """
         attr_value = message.from_user.id
-        is_user_exist: dict = await super().__call__(self.attr_name, attr_value)
+        is_user_exist: dict = await super().__call__(
+            self.attr_name, attr_value
+        )
         if is_user_exist:
             return {"user": is_user_exist["model_obj"]}
 

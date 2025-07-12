@@ -24,7 +24,9 @@ def upgrade() -> None:
     op.add_column(
         "reports", sa.Column("created_at_date", sa.DateTime(), nullable=False)
     )
-    op.drop_constraint(op.f("unique_report_in_a_day"), "reports", type_="unique")
+    op.drop_constraint(
+        op.f("unique_report_in_a_day"), "reports", type_="unique"
+    )
     op.create_unique_constraint(
         "unique_report_in_a_day", "reports", ["created_at_date", "point_id"]
     )

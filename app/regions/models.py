@@ -23,9 +23,6 @@ class Regions(Base):
     name = Column(String, nullable=False, unique=True)
     offices = relationship("Offices", back_populates="region")
     ceo = relationship("Users", foreign_keys=[ceo_id], backref="regions_ceo")
-    users = relationship(
-        "Users", back_populates="region", foreign_keys="Users.region_id"
-    )
 
     def __str__(self):
         return f"{self.name}"

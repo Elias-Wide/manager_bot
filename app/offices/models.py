@@ -19,7 +19,9 @@ class Offices(Base):
     """
 
     addres = Column(String, nullable=False)
-    region_id = Column(ForeignKey("regions.id", ondelete="SET NULL"), nullable=True)
+    region_id = Column(
+        ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
+    )
     working_schedule = Column(ChoiceType(WORKING_SCHEDULE), default="middle")
     region = relationship("Regions", back_populates="offices")
     managers = relationship("Users", back_populates="offices")

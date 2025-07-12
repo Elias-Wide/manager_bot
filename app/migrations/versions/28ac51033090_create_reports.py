@@ -27,9 +27,13 @@ def upgrade() -> None:
         sa.Column("point_id", sa.Integer(), nullable=True),
         sa.Column("img", sa.String(), nullable=False),
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(["point_id"], ["points.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["point_id"], ["points.id"], ondelete="CASCADE"
+        ),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("created_at", "point_id", name="unique_report_in_a_day"),
+        sa.UniqueConstraint(
+            "created_at", "point_id", name="unique_report_in_a_day"
+        ),
     )
     op.drop_column("points", "name")
     # ### end Alembic commands ###

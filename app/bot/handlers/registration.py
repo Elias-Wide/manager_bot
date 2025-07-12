@@ -4,8 +4,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.filters import (NameValidationFilter, OfficeExistFilter,
-                             UserExistFilter)
+from app.bot.filters import (
+    NameValidationFilter,
+    OfficeExistFilter,
+    UserExistFilter,
+)
+from app.bot.keyboards.banners import get_file
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.registration_kb import create_registration_kb
 from app.bot.states import RegistrationStates
@@ -125,9 +129,10 @@ async def finish_registration(
         telegram_id=message.from_user.id,
         username=message.from_user.username,
         office_id=office.id,
-        region_id=office.region_id,
     )
-    user_data = await state.get_data()
-    print(user_data)
-    await UsersDAO.create(user_data)
+    await UsersDAO.create(await state.get_data())
     await state.clear()
+    await message.answer_photo(
+        photo=await get_file("registration_done"),
+        caption=captions.registration_success,
+    )

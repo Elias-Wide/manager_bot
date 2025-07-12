@@ -22,12 +22,11 @@ class UsersAdmin(ModelView, model=Users):
         Users.office_id,
         Users.phone_number,
         Users.ban,
-        Users.is_region_admin,
     ] + [Users.offices]
     name = "Пользователь"
     name_plural = "Пользователи"
     can_delete = True
-    column_sortable_list = [Users.is_region_admin]
+    column_sortable_list = [Users.office_id]
     column_searchable_list = [
         Users.username,
         Users.telegram_id,
@@ -92,7 +91,7 @@ class ReportsAdmin(ModelView, model=Reports):
     icon = "fa fa-file"
 
 
-class WAdmin(ModelView, model=WorkDays):
+class WorkDaysAdmin(ModelView, model=WorkDays):
     """
     Admin page settings for the WorkDays model.
 
@@ -113,5 +112,5 @@ admin_views: tuple[ModelView] = (
     OfficesAdmin,
     RegionsAdmin,
     ReportsAdmin,
-    WAdmin,
+    WorkDaysAdmin,
 )

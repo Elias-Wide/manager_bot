@@ -7,20 +7,30 @@ from aiogram.types import CallbackQuery, Message
 from app.bot.filters import RegionAdminFilter, RegionOfficeFilter
 from app.bot.handlers.subfunctions.menucallback import RegionAdminCallBack
 from app.bot.handlers.subfunctions.region_admin_menu import (
-    get_all_reports, get_day_reports_by_region, get_region_schedule)
+    get_all_reports,
+    get_day_reports_by_region,
+    get_region_schedule,
+)
 from app.bot.keyboards.banners import get_file
-from app.bot.keyboards.buttons import (ALL_PHOTOS, CRITICAL_ERROR,
-                                       GET_DAY_REPORT, GET_OFFICE_MANAGERS,
-                                       GET_OFFICE_REPORT, GET_REGION_SCHEDULE,
-                                       WB_ADMIN_MENU_BTNS, WB_ADMIN_MENU_PAGES)
+from app.bot.keyboards.buttons import (
+    ALL_PHOTOS,
+    CRITICAL_ERROR,
+    GET_DAY_REPORT,
+    GET_OFFICE_MANAGERS,
+    GET_OFFICE_REPORT,
+    GET_REGION_SCHEDULE,
+    WB_ADMIN_MENU_BTNS,
+    WB_ADMIN_MENU_PAGES,
+)
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.main_kb_builder import get_btns
-from app.bot.scheduler import (delete_reports_photo,
-                               notify_region_admins_about_missing_reports)
+from app.bot.scheduler import (
+    delete_reports_photo,
+    notify_region_admins_about_missing_reports,
+)
 from app.bot.states import ReportsStates
 from app.core.config import REPORTS_DIR
 from app.offices.models import Offices
-from app.regions.dao import RegionsDAO
 from app.regions.models import Regions
 from app.reports.dao import ReportsDAO
 from app.reports.models import Reports
@@ -32,7 +42,9 @@ region_admin_router.message.filter(RegionAdminFilter())
 
 
 @region_admin_router.message(Command("wb_admin"))
-async def region_admin_menu(message: Message, user: Users, region: Regions) -> None:
+async def region_admin_menu(
+    message: Message, user: Users, region: Regions
+) -> None:
     """
     Start command handler for the WB admin bot.
     Initializes the bot and sets the state to the main menu.
@@ -89,7 +101,9 @@ async def get_region_admin_menu(
     F.text.regexp(r"^\d+$"),
     RegionOfficeFilter(),
 )
-async def choose_report_office(message: Message, state: FSMContext, office: Offices):
+async def choose_report_office(
+    message: Message, state: FSMContext, office: Offices
+):
     report: Reports = await ReportsDAO.get_today_office_report(office.id)
     await state.set_state(default_state)
     if not report:
@@ -109,7 +123,9 @@ async def choose_report_office(message: Message, state: FSMContext, office: Offi
     F.text.regexp(r"^\d+$"),
     RegionOfficeFilter(),
 )
-async def choose_office_info(message: Message, state: FSMContext, office: Offices):
+async def choose_office_info(
+    message: Message, state: FSMContext, office: Offices
+):
     managers: Users = await UsersDAO.get_objs_by_filter(office_id=office.id)
     await message.answer(text=await captions.get_office_info(office, managers))
     await state.set_state(default_state)
@@ -118,7 +134,9 @@ async def choose_office_info(message: Message, state: FSMContext, office: Office
 @region_admin_router.message(
     ReportsStates.choose_report_office, ~F.text.regexp(r"^\d+$")
 )
-@region_admin_router.message(ReportsStates.office_info, ~F.text.regexp(r"^\d+$"))
+@region_admin_router.message(
+    ReportsStates.office_info, ~F.text.regexp(r"^\d+$")
+)
 async def incorrect_report_office_id_format_handler(
     message: Message, state: FSMContext
 ):

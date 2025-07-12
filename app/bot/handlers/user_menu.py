@@ -6,13 +6,21 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
-from app.bot.handlers.subfunctions.main_menu import (get_menu,
-                                                     procces_main_menu_comand)
+from app.bot.handlers.subfunctions.main_menu import (
+    get_menu,
+    procces_main_menu_comand,
+)
 from app.bot.keyboards.banners import get_img
-from app.bot.keyboards.buttons import (CHANGE_MONTH, CONFIRM_SCHEDULE,
-                                       CRITICAL_ERROR, EMPTY_BTN,
-                                       MAIN_MENU_PAGES, NONE_MENU,
-                                       PROFILE_MENU, SCHEDULE)
+from app.bot.keyboards.buttons import (
+    CHANGE_MONTH,
+    CONFIRM_SCHEDULE,
+    CRITICAL_ERROR,
+    EMPTY_BTN,
+    MAIN_MENU_PAGES,
+    NONE_MENU,
+    PROFILE_MENU,
+    SCHEDULE,
+)
 from app.bot.keyboards.calendar_kb import get_days_btns
 from app.bot.keyboards.main_kb_builder import MenuCallBack
 from app.bot.states import ProfileStates
@@ -36,7 +44,9 @@ async def process_start_command(
     await state.clear()
 
 
-@user_router.callback_query(MenuCallBack.filter(F.menu_name.in_(MAIN_MENU_PAGES)))
+@user_router.callback_query(
+    MenuCallBack.filter(F.menu_name.in_(MAIN_MENU_PAGES))
+)
 async def user_menu(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
@@ -79,7 +89,9 @@ async def set_user_schedule(
             month = datetime.now().month
         callback_data.user_id = user.id
         state_data = await state.get_data()
-        schedule_in_state: list[datetime | None] = state_data.get("user_schedule", [])
+        schedule_in_state: list[datetime | None] = state_data.get(
+            "user_schedule", []
+        )
         user_schedule = [
             w_day.day
             for w_day in await WorkDaysDAO.get_user_working_days(
@@ -97,7 +109,9 @@ async def set_user_schedule(
                 month=month,
             ),
         )
-        await state.update_data(user_id=user.id, user_schedule=sorted(user_schedule))
+        await state.update_data(
+            user_id=user.id, user_schedule=sorted(user_schedule)
+        )
         await state.set_state(ProfileStates.set_schedule)
     except Exception as error:
         print(error)
