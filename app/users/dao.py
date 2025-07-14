@@ -49,7 +49,7 @@ class UsersDAO(BaseDAO):
         """
         Get a user by their Telegram ID.
         """
-        return await BaseDAO.get_by_attribute(
+        return await cls.get_by_attribute(
             attr_name="telegram_id", attr_value=telegram_id
         )
 

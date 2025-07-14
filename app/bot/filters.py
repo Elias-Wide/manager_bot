@@ -235,9 +235,7 @@ class RegionOfficeFilter(OfficeExistFilter):
         office: dict[str:Offices] = await super().__call__(message)
         if not office:
             return False
-        user: Users = await UsersDAO.get_by_attribute(
-            attr_name="telegram_id", attr_value=message.from_user.id
-        )
+        user: Users = await UsersDAO.get_by_tg_id(message.from_user.id)
         region: Regions = await RegionsDAO.get_by_attribute("ceo_id", user.id)
         if not region:
             return False

@@ -21,7 +21,7 @@ class Captions:
     phone_number_question: str = (
         "Укажите ваш номер телефона в формате +7XXXXXXXXXX."
     )
-    no_manager_office: str = ("У вас нет постоянного пункта.")
+    no_manager_office: str = "У вас нет постоянного пункта."
     office_id_question: str = (
         "Укажите ID пункта, в котором вы работаете.\n"
         "Если нет постоянного пункта - отправьте 1."

@@ -64,14 +64,14 @@ class RegionsAdmin(ModelView, model=Regions):
     """
 
     column_list = [c.name for c in Regions.__table__.c] + [
-        Regions.ceo,
+        Regions.admins,
         Regions.offices,
     ]
     name = "Регион"
     name_plural = "Регионы"
     can_delete = True
     column_sortable_list = [Regions.name]
-    column_searchable_list = [Regions.name, Regions.ceo]
+    column_searchable_list = [Regions.name]
     icon = "fa fa-map"
 
 

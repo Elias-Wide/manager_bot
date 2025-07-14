@@ -19,10 +19,10 @@ class Regions(Base):
         users (list): List of users belonging to the region.
     """
 
-    ceo_id = Column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    admin_id = Column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     name = Column(String, nullable=False, unique=True)
     offices = relationship("Offices", back_populates="region")
-    ceo = relationship("Users", foreign_keys=[ceo_id], backref="regions_ceo")
+    admins = relationship("Users", back_populates="region", foreign_keys=[admin_id])
 
     def __str__(self):
         return f"{self.name}"

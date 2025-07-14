@@ -47,9 +47,8 @@ async def notify_region_admins_about_missing_reports(
     """
     regions = await RegionsDAO.get_multi()
     for region in regions:
-        admins: list[Users] = await UsersDAO.get_objs_by_filter(
-            region_id=region.id, is_region_admin=True
-        )
+        admins: list[Users] = [await UsersDAO.get_by_id(region.ceo_id),]
+        print(f"{admins=}")
         if not admins:
             continue
         missing_reports = await get_reports_info_by_region(
@@ -65,6 +64,7 @@ async def notify_region_admins_about_missing_reports(
                     caption="✅Все на рабочих местах👏",
                 )
             else:
+                print(f"{admin=}")
                 work_time = ""
                 if working_schedule == "lower":
                     work_time = "8-22"
@@ -85,4 +85,3 @@ async def delete_old_workdays() -> None:
     Delete workdays older than the current month.
     """
     await WorkDaysDAO.delete_old_objs()
-    # Clean up old report photos
