@@ -79,9 +79,7 @@ async def set_user_schedule(
     Handles the schedule menu and displays the user's current workdays.
     """
     try:
-        user: Users = await UsersDAO.get_by_attribute(
-            attr_name="telegram_id", attr_value=callback.from_user.id
-        )
+        user: Users = await UsersDAO.get_by_tg_id(callback.from_user.id)
 
         print(f"{callback_data=}")
         month = callback_data.month
@@ -131,12 +129,10 @@ async def procce_set_schedule(
     month = callback_data.month
     if not callback_data.month:
         month = datetime.now().month
-    user = await UsersDAO.get_by_attribute(
-        attr_name="telegram_id", attr_value=callback.from_user.id
-    )
+    user = await UsersDAO.get_by_tg_id(callback.from_user.id)
     await state.update_data(user_id=user.id)
     state_data = await state.get_data()
-    user_schedule = state_data["user_schedule"]
+    user_schedule: list[datetime] = state_data["user_schedule"]
     print(user_schedule)
     if callback_data.menu_name == CONFIRM_SCHEDULE:
         try:
@@ -184,18 +180,8 @@ async def procce_set_schedule(
 async def change_month_handler(
     callback: CallbackQuery, callback_data: MenuCallBack, state: FSMContext
 ) -> None:
-    # await state.set_state(default_state)
-    print(callback_data)
     await set_user_schedule(callback, callback_data, state)
     await callback.answer()
-    # await callback.message.edit_media(
-    #             media=await get_img(SCHEDULE),
-    #             reply_markup=await get_days_btns(
-    #                 user_id=callback_data.user_id,
-    #                 level=callback_data.level,
-    #                 user_schedule=user_schedule.copy(),
-    #             ),
-    #         )
 
 
 @user_router.callback_query(
@@ -213,4 +199,3 @@ async def proccess_empty_btn(
     Handles clicks on empty calendar buttons (days of the week).
     """
     await callback.answer(text=EMPTY_BTN)
-    # await procce_set_schedule(callback, callback_data, state)

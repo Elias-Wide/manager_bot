@@ -5,34 +5,37 @@ from app.users.models import Users
 
 
 class Captions:
-    no_caption: str = ""
-    choose_office: str = "Введите id пункта."
+    """Class to manage captions for bot messages."""
+
+    all_work: str = "✅Все на рабочих местах👏"
     bot_first_message: str = (
         "Привет! Я бот для менеджеров ВБ. Чтобы начать, мне нужно немного "
         "информации о тебе."
     )
-    name_question: str = "Укажите ваше имя и фамилию в формате 'Имя Фамилия'."
+    choose_office: str = "Введите id пункта."
     incorrect_name_format: str = (
         "Некорректный формат имени. Пожалуйста, укажите имя и фамилию в формате "
         "'Имя Фамилия'."
     )
-    reports_menu: str = "Отправить отчет прихода 📨"
-    incorrect_phone_number: str = "Неверный формат номера."
-    phone_number_question: str = (
-        "Укажите ваш номер телефона в формате +7XXXXXXXXXX."
+    incorrect_office_id: str = (
+        "Пункт с таким ID не найден. Пожалуйста, проверьте введенный ID и "
+        "попробуйте снова."
     )
-    no_manager_office: str = ("У вас нет постоянного пункта.")
+    incorrect_office_id_format: str = "ID должен быть числом"
+    incorrect_phone_number: str = "Неверный формат номера."
+    name_question: str = "Укажите ваше имя и фамилию в формате 'Имя Фамилия'."
+    no_caption: str = ""
+    no_manager_office: str = "У вас нет постоянного пункта."
+    no_office_in_db: str = "Офис отсутствует в базе данных."
+    no_reports_today: str = "На сегодня отчетов нет."
     office_id_question: str = (
         "Укажите ID пункта, в котором вы работаете.\n"
         "Если нет постоянного пункта - отправьте 1."
     )
     office_not_in_region: str = "Пункт не относится к Вашему региону."
-    incorrect_office_id: str = (
-        "Пункт с таким ID не найден. Пожалуйста, проверьте введенный ID и "
-        "попробуйте снова."
+    phone_number_question: str = (
+        "Укажите ваш номер телефона в формате +7XXXXXXXXXX."
     )
-    no_reports_today: str = "На сегодня отчетов нет."
-    incorrect_office_id_format: str = "ID должен быть числом"
     registration_success: str = (
         "Вы успешно зарегистрированы! \n"
         "/start - открыть меню. \n"
@@ -44,11 +47,12 @@ class Captions:
     reports_incorrect_photo_format: str = (
         "❌Пожалуйста, отправьте фото для отчета.❌"
     )
+    reports_menu: str = "Отправить отчет прихода 📨"
     reports_success: str = "✅Отчет успешно отправлен✅"
+    schedule_saved: str = "✅ График успешно сохранен ✅"
     send_photo: str = (
         "Пункт {addres} iD {office_id}\n\n" "Загрузите фото для отчета."
     )
-    schedule_saved: str = "✅ График успешно сохранен ✅"
 
     def __getattr__(self, name):
         """

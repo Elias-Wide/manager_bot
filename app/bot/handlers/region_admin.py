@@ -76,7 +76,6 @@ async def get_region_admin_menu(
     callback_data: RegionAdminCallBack,
     state: FSMContext,
 ):
-    # user: Users = await UsersDAO.get_by_tg_id("telegram_id", callback.from_user.id)
     try:
         if callback_data.menu_name == ALL_PHOTOS:
             await get_all_reports(callback, callback_data)
@@ -167,5 +166,5 @@ async def deletefdf(message: Message, state: FSMContext):
 @region_admin_router.message(Command("send"))
 async def notify(message: Message, state: FSMContext):
     await notify_region_admins_about_missing_reports(
-        working_schedule=None, skeep_true=False
+        working_schedule=None, skeep_true=True
     )

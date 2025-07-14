@@ -92,10 +92,7 @@ async def office_report_mixin(
     state: FSMContext,
     callback_data: MenuCallBack | None = None,
 ) -> None:
-    user: Users = await UsersDAO.get_by_attribute(
-        attr_name="telegram_id",
-        attr_value=callback.from_user.id,
-    )
+    user: Users = await UsersDAO.get_by_tg_id(callback.from_user.id)
     user_data = await UsersDAO.get_user_full_data(user_id=user.id)
     if user_data["office_id"] == 1:
         await callback.answer(
@@ -148,7 +145,7 @@ async def incorrect_office_id_handler(
     Handles incorrect office ID input.
     Sends an error message.
     """
-    await message.answer(text="Офис отсутствует в базе данных.")
+    await message.answer(text=captions.no_office_in_db)
 
 
 @reports_router.message(ReportsStates.choose_office, ~F.text.isdigit())
@@ -159,7 +156,7 @@ async def incorrect_office_id_format_handler(
     Handles incorrect office ID format.
     Sends an error message.
     """
-    await message.answer(text="Допускаются только цифры.")
+    await message.answer(text=captions.incorrect_office_id_format)
 
 
 @reports_router.message(
@@ -181,12 +178,7 @@ async def send_report_photo_handler(
             {
                 "user_id": state_data.get(
                     "user_id",
-                    (
-                        await UsersDAO.get_by_attribute(
-                            attr_name="telegram_id",
-                            attr_value=message.from_user.id,
-                        )
-                    ).id,
+                    (await UsersDAO.get_by_tg_id(message.from_user.id)).id,
                 ),
                 "created_at": datetime.now(),
                 "office_id": state_data["office_id"],
@@ -203,6 +195,7 @@ async def send_report_photo_handler(
                     addres=state_data["addres"]
                 )
             )
+            await state.set_state(default_state)
         else:
             await message.answer(text=CRITICAL_ERROR, show_alert=True)
 

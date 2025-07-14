@@ -126,9 +126,9 @@ class RegionAdminFilter(UserExistFilter):
 
     async def __call__(self, message: Message):
         is_registered_user: dict[str:Users] = await super().__call__(message)
-        if is_registered_user:
-            region: Regions = await RegionsDAO.get_by_attribute(
-                attr_name="ceo_id", attr_value=is_registered_user["user"].id
+        if is_registered_user and is_registered_user["user"].region_id:
+            region: Regions = await RegionsDAO.get_by_id(
+                is_registered_user["user"].region_id
             )
             print(f"{is_registered_user=}, {region=}")
             if region:
@@ -235,13 +235,11 @@ class RegionOfficeFilter(OfficeExistFilter):
         office: dict[str:Offices] = await super().__call__(message)
         if not office:
             return False
-        user: Users = await UsersDAO.get_by_attribute(
-            attr_name="telegram_id", attr_value=message.from_user.id
-        )
-        region: Regions = await RegionsDAO.get_by_attribute("ceo_id", user.id)
+        user: Users = await UsersDAO.get_by_tg_id(message.from_user.id)
+        region: Regions = await RegionsDAO.get_by_id(user.region_id)
         if not region:
             return False
-        return office if region.ceo_id == user.id else False
+        return office if user.region_id == region.id else False
 
 
 class ValidatePhotoFilter(BaseFilter):

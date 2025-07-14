@@ -10,9 +10,7 @@ async def procces_main_menu_comand(
     message: Message, level: int = 0, menu_name: str = MAIN_MENU
 ) -> None:
     try:
-        user = await UsersDAO.get_by_attribute(
-            attr_name="telegram_id", attr_value=message.from_user.id
-        )
+        user = await UsersDAO.get_by_tg_id(message.from_user.id)
 
         media, reply_markup = await get_menu_content(
             level=level, menu_name=menu_name, user=user
@@ -30,9 +28,7 @@ async def procces_main_menu_comand(
 async def get_menu(
     callback: CallbackQuery, callback_data: MenuCallBack
 ) -> None:
-    user = await UsersDAO.get_by_attribute(
-        attr_name="telegram_id", attr_value=callback.from_user.id
-    )
+    user = await UsersDAO.get_by_tg_id(callback.from_user.id)
     callback_data.user_id = user.id
     media, reply_markup = await get_menu_content(
         level=callback_data.level, menu_name=callback_data.menu_name, user=user

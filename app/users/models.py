@@ -43,6 +43,12 @@ class Users(Base):
     username = Column(String, nullable=False)
     ban = Column(BOOLEAN, default=False)
     office_id = Column(ForeignKey("offices.id"), nullable=False)
+    region_id = Column(
+        ForeignKey("regions.id", ondelete="SET NULL"), nullable=True
+    )
+    region = relationship(
+        "Regions", back_populates="admins", foreign_keys=[region_id]
+    )
     offices = relationship(
         "Offices",
         back_populates="managers",

@@ -12,17 +12,16 @@ class Regions(Base):
     Model representing a region.
 
     Attributes:
-        ceo_id (int): Foreign key to the user who is the CEO of the region.
         name (str): Name of the region.
         offices (list): List of offices (offices) in the region.
-        ceo (Users): Relationship to the user who is the CEO.
-        users (list): List of users belonging to the region.
+        admins (Users): Relationship to the user who is managginf the region.
     """
 
-    ceo_id = Column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     name = Column(String, nullable=False, unique=True)
     offices = relationship("Offices", back_populates="region")
-    ceo = relationship("Users", foreign_keys=[ceo_id], backref="regions_ceo")
+    admins = relationship(
+        "Users", back_populates="region", foreign_keys=[Users.region_id]
+    )
 
     def __str__(self):
         return f"{self.name}"
