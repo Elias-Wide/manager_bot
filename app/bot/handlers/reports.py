@@ -145,7 +145,7 @@ async def incorrect_office_id_handler(
     Handles incorrect office ID input.
     Sends an error message.
     """
-    await message.answer(text="Офис отсутствует в базе данных.")
+    await message.answer(text=captions.no_office_in_db)
 
 
 @reports_router.message(ReportsStates.choose_office, ~F.text.isdigit())
@@ -156,7 +156,7 @@ async def incorrect_office_id_format_handler(
     Handles incorrect office ID format.
     Sends an error message.
     """
-    await message.answer(text="Допускаются только цифры.")
+    await message.answer(text=captions.incorrect_office_id_format)
 
 
 @reports_router.message(

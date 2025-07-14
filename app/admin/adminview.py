@@ -22,6 +22,7 @@ class UsersAdmin(ModelView, model=Users):
         Users.office_id,
         Users.phone_number,
         Users.ban,
+        Users.region_id,
     ] + [Users.offices]
     name = "Пользователь"
     name_plural = "Пользователи"

@@ -8,6 +8,7 @@ from app.bot.handlers.subfunctions.region_admin_menu import (
 )
 from app.bot.init_bot import bot
 from app.bot.keyboards.banners import get_file
+from app.bot.keyboards.captions import captions
 from app.bot.utils import create_excel_report
 from app.core.config import REPORTS_DIR
 from app.core.constants import FMT_JPG
@@ -45,10 +46,9 @@ async def notify_region_admins_about_missing_reports(
     - For each office without a report, add to result list.
     - Send the list to each region admin.
     """
-    regions = await RegionsDAO.get_multi()
+    regions = await RegionsDAO.get_regions_with_admins()
     for region in regions:
-        admins: list[Users] = [await UsersDAO.get_by_id(region.ceo_id),]
-        print(f"{admins=}")
+        admins: list[Users] = region.admins
         if not admins:
             continue
         missing_reports = await get_reports_info_by_region(
@@ -61,7 +61,7 @@ async def notify_region_admins_about_missing_reports(
                 await bot.send_photo(
                     chat_id=admin.telegram_id,
                     photo=await get_file("report_ok"),
-                    caption="✅Все на рабочих местах👏",
+                    caption=captions.all_work,
                 )
             else:
                 print(f"{admin=}")
