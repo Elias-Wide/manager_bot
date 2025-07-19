@@ -51,6 +51,7 @@ class OfficesDAO(BaseDAO):
         If not, create it.
         """
         async with async_session_maker() as session:
+
             result = await session.execute(
                 select(Offices).where(
                     Offices.id == NO_OFFICE_ID,

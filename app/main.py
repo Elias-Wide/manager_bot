@@ -18,7 +18,9 @@ from app.bot.scheduler import (
 )
 from app.core.config import settings
 from app.core.database import engine
+from app.core.exceptions import DataBaseConnectionError
 from app.core.logging import get_logger
+from app.dao.base import BaseDAO
 
 logger = get_logger(__name__)
 
@@ -28,6 +30,11 @@ WEBHOOK_URL = f"{settings.telegram.webhook_host}/webhook"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    try:
+        BaseDAO.check_database_connection()
+    except DataBaseConnectionError as e:
+        logger.error(f"Database connection error: {e.message}")
+        raise e
     logger.info("Starting bot setup...")
     scheduler = AsyncIOScheduler()
     scheduler.start()

@@ -6,6 +6,7 @@ from sqlalchemy import insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.database import Base, async_session_maker
+from app.core.exceptions import DataBaseConnectionError
 from app.core.logging import get_logger
 
 ModelType = TypeVar("ModelType", bound=Base)
@@ -191,3 +192,21 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 ),
             )
             return db_obj.scalars().first()
+
+    @classmethod
+    async def check_database_connection(cls) -> bool:
+        """
+        Check if the database connection is alive.
+
+        Returns:
+            bool: True if the connection is alive, False otherwise.
+        """
+        async with async_session_maker() as session:
+            try:
+                await session.execute(select(1))
+                return True
+            except Exception as error:
+                logger.critical(f"Database connection error: {error}")
+                raise DataBaseConnectionError(
+                    f"Database connection error: {error}"
+                )
