@@ -6,6 +6,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
 from app.core.config import settings
+from app.core.logging import get_logger
 from app.offices.dao import OfficesDAO
 
 bot = Bot(
@@ -13,6 +14,8 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 dp = Dispatcher()
+
+logger = get_logger(__name__)
 
 
 async def start_bot():
@@ -22,11 +25,10 @@ async def start_bot():
     This function notifies the admin that the bot has been successfully launched.
     """
     try:
-        # subprocess.run(["alembic", "upgrade", "head"], capture_output=True, text=True)
         await bot.send_message(settings.telegram.admin_id, "I am running 🥳.")
         await OfficesDAO.ensure_default_office()
     except:
-        print("MESSAGE NOT SENT")
+        logger.error("Failed to send stop message to admin.")
 
 
 async def stop_bot():
@@ -41,7 +43,7 @@ async def stop_bot():
             settings.telegram.admin_id, "The bot has been stopped."
         )
     except:
-        pass
+        logger.error("Failed to send stop message to admin.")
 
 
 async def critical_message_to_admin(message: str):
@@ -54,4 +56,4 @@ async def critical_message_to_admin(message: str):
     try:
         await bot.send_message(settings.telegram.admin_id, message)
     except:
-        pass
+        logger.error("Failed to send stop message to admin.")
