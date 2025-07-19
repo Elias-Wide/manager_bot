@@ -126,7 +126,9 @@ async def choose_office_info(
     message: Message, state: FSMContext, office: Offices
 ):
     managers: Users = await UsersDAO.get_objs_by_filter(office_id=office.id)
-    await message.answer(text=await captions.get_office_info(office, managers))
+    await message.answer(
+        text=await captions.get_office_info(office, managers)
+    )
     await state.set_state(default_state)
 
 
@@ -158,13 +160,14 @@ async def handle_office_not_in_region(message: Message, state: FSMContext):
     await state.set_state(default_state)
 
 
-@region_admin_router.message(Command("delete"))
-async def deletefdf(message: Message, state: FSMContext):
-    await delete_reports_photo()
+# TEST COMMANDS
+# @region_admin_router.message(Command("delete"))
+# async def delete_photos(message: Message, state: FSMContext):
+#     await delete_reports_photo()
 
 
-@region_admin_router.message(Command("send"))
-async def notify(message: Message, state: FSMContext):
-    await notify_region_admins_about_missing_reports(
-        working_schedule=None, skeep_true=True
-    )
+# @region_admin_router.message(Command("send"))
+# async def notify(message: Message, state: FSMContext):
+#     await notify_region_admins_about_missing_reports(
+#         working_schedule=None, skeep_true=True
+#     )

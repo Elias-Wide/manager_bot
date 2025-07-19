@@ -35,7 +35,10 @@ def downgrade() -> None:
     op.add_column(
         "users",
         sa.Column(
-            "is_region_admin", sa.BOOLEAN(), autoincrement=False, nullable=True
+            "is_region_admin",
+            sa.BOOLEAN(),
+            autoincrement=False,
+            nullable=True,
         ),
     )
     op.add_column(

@@ -123,13 +123,16 @@ class WorkDaysDAO(BaseDAO):
         async with async_session_maker() as session:
             stmt = (
                 select(
-                    WorkDays.day, Offices.addres, Offices.id.label("office_id")
+                    WorkDays.day,
+                    Offices.addres,
+                    Offices.id.label("office_id"),
                 )
                 .join(Offices, Offices.region_id == region_id)
                 .join(Users, Users.office_id == Offices.id)
                 .where(
                     and_(
-                        extract("month", WorkDays.day) == datetime.now().month,
+                        extract("month", WorkDays.day)
+                        == datetime.now().month,
                     )
                 )
             )

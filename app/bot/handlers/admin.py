@@ -14,7 +14,7 @@ admin_router.message.filter(AdminFilter())
 
 @admin_router.message(Command("d_offices"))
 async def procces_dnwld_office_command(message: Message, state: FSMContext):
-    """Обработка команды загрузки пунктов."""
+    """Prompts the user to upload a file with offices data."""
     await message.answer(text="Загрузите необходимый файл.")
     await state.set_state(AdminStates.dwnld_offices)
 
@@ -23,7 +23,7 @@ async def procces_dnwld_office_command(message: Message, state: FSMContext):
     AdminStates.dwnld_offices, F.content_type == ContentType.DOCUMENT
 )
 async def proccess_dwnld_file(message: Message, state: FSMContext):
-    """Обработка сообщения, загрузка и обработка файла."""
+    """Processes the uploaded file and saves office data to the database."""
     office_list = await read_excel_file(message=message)
     for office_data in office_list:
         await OfficesDAO.create(office_data)

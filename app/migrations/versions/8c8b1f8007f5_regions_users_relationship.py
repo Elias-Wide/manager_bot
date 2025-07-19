@@ -24,7 +24,9 @@ def upgrade() -> None:
     op.alter_column(
         "reports", "user_id", existing_type=sa.INTEGER(), nullable=False
     )
-    op.add_column("users", sa.Column("region_id", sa.Integer(), nullable=True))
+    op.add_column(
+        "users", sa.Column("region_id", sa.Integer(), nullable=True)
+    )
     op.create_foreign_key(
         None, "users", "regions", ["region_id"], ["id"], ondelete="SET NULL"
     )
