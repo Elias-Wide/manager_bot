@@ -119,15 +119,17 @@ async def office_report_mixin(
 @reports_router.message(
     ReportsStates.choose_office, F.text.isdigit(), OfficeExistFilter()
 )
-async def send_report_photo(
+async def handle_correct_office_id(
     message: Message, state: FSMContext, office: Offices
 ) -> None:
     """
     Handles input of office ID for the report.
     Proceeds to the next state for sending the report photo.
     """
-    office_id = int(message.text)
-    await state.update_data(office_id=office_id, addres=office.addres)
+    if office.id == 1:
+        await incorrect_office_id_handler(message, state)
+        return
+    await state.update_data(office_id=office.id, addres=office.addres)
     await state.set_state(ReportsStates.send_photo)
     await message.answer(
         text=captions.send_photo.format(
