@@ -54,8 +54,9 @@ async def user_menu(
     Handles menu button clicks.
     """
     await state.clear()
+    user = await UsersDAO.get_by_tg_id(callback.from_user.id)
     try:
-        await get_menu(callback, callback_data)
+        await get_menu(callback, callback_data, user)
         await callback.answer()
     except Exception as error:
         print(error)
@@ -133,7 +134,6 @@ async def procce_set_schedule(
     await state.update_data(user_id=user.id)
     state_data = await state.get_data()
     user_schedule: list[datetime] = state_data["user_schedule"]
-    print(user_schedule)
     if callback_data.menu_name == CONFIRM_SCHEDULE:
         try:
             await WorkDaysDAO.set_user_schedule(
@@ -142,7 +142,7 @@ async def procce_set_schedule(
             await state.clear()
             await callback.answer(text="Schedule saved successfully.")
             callback_data.level, callback_data.menu_name = 1, PROFILE_MENU
-            await get_menu(callback, callback_data)
+            await get_menu(callback, callback_data, user)
         except Exception as error:
             print("CONFIRM_SCHEDULE ERROR", error)
             await callback.answer(text=CRITICAL_ERROR, show_alert=True)

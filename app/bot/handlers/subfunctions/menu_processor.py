@@ -20,7 +20,6 @@ async def get_menu_content(
     level: int,
     user: Users,
 ) -> tuple[InputMediaPhoto | InlineKeyboardMarkup]:
-    print(f"get_menu_content: {menu_name=}, {level=}, {user.id=}")
     if menu_name == MAIN_MENU:
         return await get_image_and_kb(
             menu_name=menu_name,

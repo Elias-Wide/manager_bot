@@ -6,10 +6,12 @@ from sqlalchemy import insert, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.database import Base, async_session_maker
+from app.core.logging import get_logger
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+logger = get_logger(__name__)
 
 
 class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -77,12 +79,12 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 return object.mappings().first()
             except (SQLAlchemyError, Exception) as error:
                 await session.rollback()
-                print(error)
                 if isinstance(error, SQLAlchemyError):
                     message = "Database Exception"
                 elif isinstance(error, Exception):
                     message = "Unknown Exception"
                 message += ": Unable to add data."
+                logger.error(f"{message} {error}")
                 raise error
 
     @classmethod
@@ -112,6 +114,8 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 await session.refresh(db_obj)
                 return db_obj
             except Exception as error:
+                logger.error(f"Error deleting object: {error}")
+                await session.rollback()
                 await session.rollback()
                 raise error
 
@@ -138,6 +142,8 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 await session.commit()
                 return object_to_delete
             except Exception as error:
+                logger.error(f"Error deleting object: {error}")
+                await session.rollback()
                 return None
 
     @classmethod
@@ -159,7 +165,7 @@ class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 result = db_objs.scalars().all()
                 return result if result else []
             except Exception as error:
-                print(f"Error in get_list_by_filter: {error}")
+                logger.error(f"Error in get_list_by_filter: {error}")
                 return None
 
     @classmethod

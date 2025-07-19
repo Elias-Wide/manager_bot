@@ -19,12 +19,14 @@ from app.bot.keyboards.buttons import (
 from app.bot.keyboards.captions import captions
 from app.bot.keyboards.main_kb_builder import get_btns
 from app.bot.states import ReportsStates
+from app.core.logging import get_logger
 from app.offices.models import Offices
 from app.reports.dao import ReportsDAO
 from app.users.dao import UsersDAO
 from app.users.models import Users
 
 reports_router = Router()
+logger = get_logger(__name__)
 
 
 @reports_router.callback_query(
@@ -44,7 +46,6 @@ async def choose_office(
     Handles the button click for selecting an office for the report.
     Proceeds to the next state for office selection.
     """
-    print(f"{callback_data=}")
     await state.set_state(ReportsStates.choose_office)
     await callback.message.edit_media(
         media=await get_img(CHOOSE_OFFICE),
@@ -118,15 +119,17 @@ async def office_report_mixin(
 @reports_router.message(
     ReportsStates.choose_office, F.text.isdigit(), OfficeExistFilter()
 )
-async def send_report_photo(
+async def handle_correct_office_id(
     message: Message, state: FSMContext, office: Offices
 ) -> None:
     """
     Handles input of office ID for the report.
     Proceeds to the next state for sending the report photo.
     """
-    office_id = int(message.text)
-    await state.update_data(office_id=office_id, addres=office.addres)
+    if office.id == 1:
+        await incorrect_office_id_handler(message, state)
+        return
+    await state.update_data(office_id=office.id, addres=office.addres)
     await state.set_state(ReportsStates.send_photo)
     await message.answer(
         text=captions.send_photo.format(
@@ -188,7 +191,6 @@ async def send_report_photo_handler(
         await message.answer(text=captions.reports_success)
         await state.clear()
     except Exception as error:
-        print(error)
         if "unique_report_in_a_day" in str(error):
             await message.answer(
                 text=captions.report_created_today.format(
@@ -197,6 +199,7 @@ async def send_report_photo_handler(
             )
             await state.set_state(default_state)
         else:
+            logger.error(f"Error saving report: {error}")
             await message.answer(text=CRITICAL_ERROR, show_alert=True)
 
 

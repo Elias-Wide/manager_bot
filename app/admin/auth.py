@@ -7,10 +7,9 @@ from app.core.config import settings
 
 
 class AdminAuth(AuthenticationBackend):
-    """Настройка бэкенда аутенфикации."""
+    """The class contains the logic for authentication in the admin panel."""
 
     async def login(self, request: Request) -> bool:
-        """Метод содержит логику при входе в систему."""
         form = await request.form()
         username, password = form["username"], form["password"]
         print(username, password)
@@ -23,12 +22,10 @@ class AdminAuth(AuthenticationBackend):
         return False
 
     async def logout(self, request: Request) -> bool:
-        """Метод содержит логику выхода из системы."""
         request.session.clear()
         return True
 
     async def authenticate(self, request: Request) -> bool:
-        """Метод содержит логику аутенфикации."""
         token = request.session.get("token")
         if not token:
             return False
