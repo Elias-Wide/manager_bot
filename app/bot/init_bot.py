@@ -25,7 +25,7 @@ async def start_bot():
     This function notifies the admin that the bot has been successfully launched.
     """
     try:
-        await bot.send_message(settings.telegram.admin_id, "I am running 🥳.")
+        await bot.send_message(settings.telegram.admin_id, "Bot has been launched.")
         await OfficesDAO.ensure_default_office()
     except:
         logger.error("Failed to send stop message to admin.")
